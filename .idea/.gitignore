@@ -1,0 +1,11 @@
+# Ignore JetBrains IDE settings
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Ignore Writerside build output
+.writerside/
+.writerside-cache/
+build/
+out/
