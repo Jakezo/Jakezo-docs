@@ -1,16 +1,12 @@
 # 🌐 **Jakezo-docs** - Jakezo의 개발 블로그  
 
-![GitHub Pages](https://img.shields.io/badge/GitHub-Pages-Enabled-blue?style=flat-square&logo=github)
-![Status](https://img.shields.io/website?down_message=Offline&up_message=Online&url=https%3A%2F%2Fjakezo.github.io%2FJakezo-docs)
-![Last Commit](https://img.shields.io/github/last-commit/Jakezo/Jakezo-docs?style=flat-square)
-
 > **🚀 개발 기록과 기술 정리를 위한 개인 블로그입니다.**  
 > **Writerside**를 기반으로 GitHub Pages에서 호스팅됩니다.  
 
 ---
 
 ## 📖 **블로그 주소**  
-🔗 **Jakezo 블로그** → [https://jakezo.github.io/Jakezo-docs](https://jakezo.github.io/Jakezo-docs)
+🔗 **Jakezo 블로그** → [https://jakezo.github.io/Jakezo-docs](https://jakezo.github.io)
 
 ---
 
