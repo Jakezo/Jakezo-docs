@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d762ff5-161e-4151-a219-f60f5f7c2a54" name="Changes" comment="post2">
-      <change afterPath="$PROJECT_DIR$/.github/workflows/build-docs.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/topics/algo생각.md" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/topics/algo생각.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Writerside/topics/GitHub과-Writerside-프로젝트-연동-및-배포-가이드-.md" afterPathEscaped="$PROJECT_DIR$/Writerside/topics/GitHub과-Writerside-프로젝트-연동-및-배포-가이드-🚀.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/build-docs.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/build-docs.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/a.tree" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/a.tree" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,25 +90,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Writerside.Web Archive (a).executor": "Run",
-    "git-widget-placeholder": "main",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "writerside.last.selected.productJakeLibrary": "in"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Writerside.Web Archive (a).executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;writerside.last.selected.productJakeLibrary&quot;: &quot;in&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Markdown",
-      "yaml"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Markdown&quot;,
+      &quot;yaml&quot;
     ],
-    "stardust.markdown.MarkdownSplitEditorSuppressor:keyList": [
-      "/Users/jake/WritersideProjects/JakeLibrary/Writerside/topics/algo생각.md"
+    &quot;stardust.markdown.MarkdownSplitEditorSuppressor:keyList&quot;: [
+      &quot;/Users/jake/WritersideProjects/JakeLibrary/Writerside/topics/GitHub과-Writerside-프로젝트-연동-및-배포-가이드-🚀.md&quot;,
+      &quot;/Users/jake/WritersideProjects/JakeLibrary/Writerside/topics/algo생각.md&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Web Archive (a)" type="StardustRunConfiguration" factoryName="save-as-zip">
       <option name="folderPath" value="$PROJECT_DIR$" />
