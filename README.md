@@ -6,7 +6,7 @@
 ---
 
 ## 📖 **블로그 주소**  
-🔗 **Jakezo 블로그** → [https://jakezo.github.io/Jakezo-docs](https://jakezo.github.io)
+🔗 **Jakezo 블로그** → [https://jakezo.github.io/Jakezo-docs](https://jakezo.github.io/Jakezo-docs)
 
 ---
 
