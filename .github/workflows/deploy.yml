@@ -20,11 +20,6 @@ jobs:
       - name: Extract Writerside Docs
         run: |
           mkdir -p docs  # ✅ docs 폴더가 없으면 생성
-          ls -R docs/  # ✅ docs 폴더 내부 파일 목록 출력 (디버깅)
-          if [ ! -f docs/webHelpJ2-all.zip ]; then
-            echo "❌ ERROR: webHelpJ2-all.zip not found in docs/"
-            exit 1
-          fi
           unzip -o docs/webHelpJ2-all.zip -d docs  # ✅ ZIP 파일 해제 후 /docs 폴더로 이동
 
       - name: Setup Pages
