@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d762ff5-161e-4151-a219-f60f5f7c2a54" name="Changes" comment="post34">
+      <change afterPath="$PROJECT_DIR$/Writerside/redirection-rules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Writerside/topics/algogo.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/topics/algo생각.md" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/topics/algo생각.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/j.tree" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/j.tree" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/topics/algo생각.md" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
