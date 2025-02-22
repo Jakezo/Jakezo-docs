@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'artifacts/webHelpJ2-all.zip'  # ✅ 이 파일이 변경될 때만 실행
 
 jobs:
   deploy:

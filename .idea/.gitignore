@@ -12,3 +12,4 @@
 build/
 out/
 
+!docs/webHelpJ2-all.zip
