@@ -1,4 +1,4 @@
-# GitHub과 Writerside 프로젝트 연동 및 배포가이드
+#GitHub과 Writerside 프로젝트 연동 및 배포가이드
 
 
 이 문서는 **기존 Writerside 프로젝트를 GitHub 레포지토리(`Jakezo-docs`)에 연결하고 GitHub Pages를 통해 배포하는 방법**을 설명합니다.
