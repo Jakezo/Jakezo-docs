@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d762ff5-161e-4151-a219-f60f5f7c2a54" name="Changes" comment="post344">
-      <change afterPath="$PROJECT_DIR$/Writerside/topics/GitHub과-Writerside-프로젝트-연동-및-배포가이드.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Writerside/j.tree" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/j.tree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/artifacts/webHelpJ2-all.zip" beforeDir="false" afterPath="$PROJECT_DIR$/artifacts/webHelpJ2-all.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/redirection-rules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/redirection-rules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/topics/GitHub과-Writerside-프로젝트-연동-및-배포-가이드-.md" beforePathEscaped="$PROJECT_DIR$/Writerside/topics/GitHub과-Writerside-프로젝트-연동-및-배포-가이드-🚀.md" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
