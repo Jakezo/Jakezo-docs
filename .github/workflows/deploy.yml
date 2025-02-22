@@ -19,7 +19,12 @@ jobs:
 
       - name: Extract Writerside Docs
         run: |
-          rm -rf docs/*  # ✅ 기존 파일 삭제
+          mkdir -p docs  # ✅ docs 폴더가 없으면 생성
+          ls -R docs/  # ✅ docs 폴더 내부 파일 목록 출력 (디버깅)
+          if [ ! -f docs/webHelpJ2-all.zip ]; then
+            echo "❌ ERROR: webHelpJ2-all.zip not found in docs/"
+            exit 1
+          fi
           unzip -o docs/webHelpJ2-all.zip -d docs  # ✅ ZIP 파일 해제 후 /docs 폴더로 이동
 
       - name: Setup Pages
@@ -28,7 +33,7 @@ jobs:
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/  # ✅ 이제 docs/ 폴더가 직접 Writerside 빌드 결과물이 됨
+          path: docs/  # ✅ docs/ 폴더가 직접 Writerside 빌드 결과물이 됨
 
       - name: Deploy to GitHub Pages
         id: deployment
