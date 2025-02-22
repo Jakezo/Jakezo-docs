@@ -6,6 +6,7 @@
                  name="Jakezo"
                  start-page="starter-topic.md">
 
+    <toc-element topic="GitHub과-Writerside-프로젝트-연동-및-배포가이드.md"/>
     <toc-element topic="Tutorial.md"/>
     <toc-element topic="GitHub과-Writerside-프로젝트-연동-및-배포-가이드-🚀.md"/>
     <toc-element topic="algogo.md"/>
