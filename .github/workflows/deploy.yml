@@ -20,7 +20,7 @@ jobs:
       - name: Extract Writerside Docs
         run: |
           mkdir -p docs  # ✅ GitHub Actions에서 자동으로 /docs 폴더 생성
-          unzip -o artifacts/webHelpJ2-all.zip -d docs  # ✅ ZIP 파일 해제 후 /docs 폴더로 이동
+          unzip -o docs/webHelpJ2-all.zip -d docs  # ✅ ZIP 파일 해제 후 /docs 폴더로 이동
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
