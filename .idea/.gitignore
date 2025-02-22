@@ -9,3 +9,5 @@
 .writerside-cache/
 build/
 out/
+
+!artifacts/

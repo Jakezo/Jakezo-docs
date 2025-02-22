@@ -4,9 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d762ff5-161e-4151-a219-f60f5f7c2a54" name="Changes" comment="post3">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/build-docs.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/build-docs.yml" afterDir="false" />
+    <list default="true" id="6d762ff5-161e-4151-a219-f60f5f7c2a54" name="Changes" comment="post34">
+      <change afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Writerside/topics/Tutorial.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/build-docs.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/a.tree" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/j.tree" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/cfg/buildprofiles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/cfg/buildprofiles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/writerside.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/Writerside/writerside.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webHelpA2-all.zip" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,6 +80,60 @@
             </ColorState>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/Writerside/j.tree">
+          <value>
+            <ColorState>
+              <option name="customOrder" value="4" />
+              <option name="first">
+                <RgbState>
+                  <option name="blue" value="112" />
+                  <option name="darkBlue" value="112" />
+                  <option name="darkGreen" value="83" />
+                  <option name="darkRed" value="215" />
+                  <option name="green" value="83" />
+                  <option name="red" value="215" />
+                </RgbState>
+              </option>
+              <option name="second">
+                <RgbState>
+                  <option name="blue" value="163" />
+                  <option name="darkBlue" value="163" />
+                  <option name="darkGreen" value="111" />
+                  <option name="darkRed" value="233" />
+                  <option name="green" value="111" />
+                  <option name="red" value="233" />
+                </RgbState>
+              </option>
+            </ColorState>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Writerside/s.tree">
+          <value>
+            <ColorState>
+              <option name="customOrder" value="3" />
+              <option name="first">
+                <RgbState>
+                  <option name="blue" value="147" />
+                  <option name="darkBlue" value="147" />
+                  <option name="darkGreen" value="69" />
+                  <option name="darkRed" value="143" />
+                  <option name="green" value="69" />
+                  <option name="red" value="143" />
+                </RgbState>
+              </option>
+              <option name="second">
+                <RgbState>
+                  <option name="blue" value="227" />
+                  <option name="darkBlue" value="227" />
+                  <option name="darkGreen" value="114" />
+                  <option name="darkRed" value="181" />
+                  <option name="green" value="114" />
+                  <option name="red" value="181" />
+                </RgbState>
+              </option>
+            </ColorState>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
@@ -92,26 +153,23 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Writerside.Web Archive (a).executor": "Run",
+    "Writerside.Writerside - Build ZIP.executor": "Run",
     "git-widget-placeholder": "main",
     "settings.editor.selected.configurable": "preferences.externalDependencies",
-    "writerside.last.selected.productJakeLibrary": "in"
+    "writerside.last.selected.productJakeLibrary": "s"
   },
   "keyToStringList": {
     "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
       "Markdown",
       "yaml"
-    ],
-    "stardust.markdown.MarkdownSplitEditorSuppressor:keyList": [
-      "/Users/jake/WritersideProjects/JakeLibrary/Writerside/topics/GitHub과-Writerside-프로젝트-연동-및-배포-가이드-🚀.md",
-      "/Users/jake/WritersideProjects/JakeLibrary/Writerside/topics/algo생각.md"
     ]
   }
 }]]></component>
   <component name="RunManager">
-    <configuration name="Web Archive (a)" type="StardustRunConfiguration" factoryName="save-as-zip">
-      <option name="folderPath" value="$PROJECT_DIR$" />
-      <option name="instanceId" value="a" />
-      <option name="instanceName" value="Algo" />
+    <configuration name="Writerside - Build ZIP" type="StardustRunConfiguration" factoryName="save-as-zip">
+      <option name="folderPath" value="$PROJECT_DIR$/artifacts" />
+      <option name="instanceId" value="j" />
+      <option name="instanceName" value="Jakezo" />
       <method v="2" />
     </configuration>
   </component>
@@ -130,6 +188,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="post2" />
     <MESSAGE value="post3" />
-    <option name="LAST_COMMIT_MESSAGE" value="post3" />
+    <MESSAGE value="post34" />
+    <option name="LAST_COMMIT_MESSAGE" value="post34" />
   </component>
 </project>

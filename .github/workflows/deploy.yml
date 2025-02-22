@@ -1,0 +1,33 @@
+name: Deploy Writerside Docs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      pages: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Extract Writerside Docs
+        run: |
+          mkdir -p docs  # ✅ GitHub Actions에서 자동으로 /docs 폴더 생성
+          unzip -o artifacts/webHelpJ2-all.zip -d docs  # ✅ ZIP 파일 해제 후 /docs 폴더로 이동
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/  # ✅ GitHub Pages에서 배포할 폴더 지정
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
