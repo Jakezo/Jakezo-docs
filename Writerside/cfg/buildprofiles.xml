@@ -6,7 +6,7 @@
     <variables>
         <algolia-id>0RT7T1PSVV</algolia-id>
         <algolia-index>writerside_docs</algolia-index>
-        <algolia-api-key>96f8bf418fb8f07878a65df55b12d597</algolia-api-key>
+        <algolia-api-key>${{ secrets.ALGOLIA_SEARCH_ONLY_API_KEY }}</algolia-api-key>  <!-- Search-Only API Key -->
         <algolia-show-logo>true</algolia-show-logo> <!-- 무료 플랜이면 true 유지 -->
     </variables>
 
