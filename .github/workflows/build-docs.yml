@@ -11,7 +11,7 @@ permissions:
   pages: write
 
 env:
-  INSTANCE: 'Writerside/Jakezo'
+  INSTANCE: 'Writerside/j'
   DOCKER_VERSION: '243.22562'
   ALGOLIA_APP_NAME: '0RT7T1PSVV'
   ALGOLIA_INDEX_NAME: 'writerside_docs'
