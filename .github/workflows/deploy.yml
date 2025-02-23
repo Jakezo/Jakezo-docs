@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'docs/**'  # ✅ docs/ 폴더 내부 파일 변경 시 실행
 
 jobs:
   deploy:
@@ -16,9 +18,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Extract Writerside Docs
-        run: |
-          mkdir -p aa  # ✅ docs 폴더가 없으면 생성
-          unzip -o docs/webHelpJ2-all.zip -d aa  # ✅ ZIP 파일 해제 후 /docs 폴더로 이동
+        run: unzip -o docs/webHelpJ2-all.zip -d artifact  # 🔹 ZIP 파일을 artifact 폴더에 해제 (자동 생성)
+
+      - name: Check Folder Structure  # ✅ ZIP 해제 후 폴더 구조 확인
+        run: ls -R artifact/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -26,7 +29,7 @@ jobs:
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: aa/  # ✅ docs/ 폴더가 직접 Writerside 빌드 결과물이 됨
+          path: artifact/  # ✅ ZIP 해제된 artifact 폴더를 직접 배포
 
       - name: Deploy to GitHub Pages
         id: deployment
