@@ -35,17 +35,23 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+      - name: Upload Writerside Build as Artifact  # ✅ Writerside 빌드 결과를 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: writerside-docs  # ✅ "writerside-docs"라는 이름으로 저장
+          path: build/
+
   publish-indexes:
     runs-on: ubuntu-latest
-    needs: deploy  # ✅ GitHub Pages 배포 완료 후 실행
+    needs: deploy  # ✅ Writerside 배포 후 실행
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Download Writerside Build
+      - name: Download Writerside Build  # ✅ Writerside 빌드 결과 다운로드
         uses: actions/download-artifact@v4
         with:
-          name: writerside-docs
+          name: writerside-docs  # ✅ "writerside-docs" 아티팩트 다운로드
           path: build/
 
       - name: Extract Algolia Indexes
