@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'docs/**'  # ✅ docs/ 폴더 내부 파일 변경 시 실행
+      - 'build/**'  # ✅ build/ 폴더 내부 파일 변경 시 실행
 
 jobs:
   deploy:
@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Extract Writerside Docs
-        run: unzip -o docs/webHelpJ2-all.zip -d artifact  # 🔹 ZIP 파일을 artifact 폴더에 해제 (자동 생성)
+        run: unzip -o build/webHelpJ2-all.zip -d artifact  # 🔹 ZIP 파일을 artifact 폴더에 해제 (자동 생성)
 
       - name: Check Folder Structure  # ✅ ZIP 해제 후 폴더 구조 확인
         run: ls -R artifact/
