@@ -1,4 +1,4 @@
-name: Deploy Writerside Docs
+name: Deploy Writerside Docs & Upload Algolia Index
 
 on:
   push:
@@ -34,3 +34,30 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  publish-indexes:
+    runs-on: ubuntu-latest
+    needs: deploy  # ✅ GitHub Pages 배포 완료 후 실행
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download Writerside Build
+        uses: actions/download-artifact@v4
+        with:
+          name: writerside-docs
+          path: build/
+
+      - name: Extract Algolia Indexes
+        run: unzip -o build/algolia-indexes-*.zip -d algolia-index/
+
+      - name: Upload Algolia Index to Algolia
+        run: |
+          for file in algolia-index/*.json; do
+            curl -X POST \
+              -H "X-Algolia-API-Key: ${{ secrets.ALGOLIA_KEY }}" \
+              -H "X-Algolia-Application-Id: ${{ secrets.ALGOLIA_APP_ID }}" \
+              -H "Content-Type: application/json" \
+              --data-binary @$file \
+              "https://${{ secrets.ALGOLIA_APP_ID }}-dsn.algolia.net/1/indexes/${{ secrets.ALGOLIA_INDEX_NAME }}/batch"
+          done
