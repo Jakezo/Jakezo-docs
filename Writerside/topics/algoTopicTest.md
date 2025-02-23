@@ -55,7 +55,7 @@ myPromise
 
 **resolve**는 Promise를 **Fulfilled(이행됨)** 상태로 전환하는 함수입니다. 만약 **resolve**를 호출하지 않으면, Promise는 **영원히 Pending(대기 중)** 상태로 남게 되어 **.then()** 블록이 실행되지 않습니다.
 
-#### 🔹 **resolve 호출이 필요한 이유**
+#### 🔹 **resolve 호출이 필요한 이유** {id="resolve_1"}
 
 - **Promise는 기본적으로 Pending 상태**로 시작하며, 상태 변화를 자동으로 하지 않습니다.
 - 비동기 작업이 완료되었음을 **명시적으로 알려줘야** 다음 단계(then)가 실행됩니다.
