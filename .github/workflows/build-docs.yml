@@ -113,7 +113,7 @@ jobs:
       - name: Package and upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: artifacts  # ✅ 전체 artifacts 폴더 업로드 (config.js 포함)
+          path: dir
 
       - name: Deploy to GitHub Pages
         id: deployment
