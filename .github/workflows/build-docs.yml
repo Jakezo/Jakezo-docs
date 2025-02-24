@@ -105,6 +105,9 @@ jobs:
             indexName: '${{ env.ALGOLIA_INDEX_NAME }}'
           };" > dir/config.js
 
+      - name: Verify config.js exists  # ✅ config.js가 정상적으로 생성되었는지 확인
+        run: ls -l dir/config.js
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
