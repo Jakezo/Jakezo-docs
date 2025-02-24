@@ -4,9 +4,9 @@
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <variables>
-        <algolia-id>0RT7T1PSVV</algolia-id>
-        <algolia-index>writerside_docs</algolia-index>
-        <algolia-api-key>c77851e59c826d62824607e9e0c9ac61</algolia-api-key>
+        <algolia-id>KDOVBDVHN8</algolia-id>
+        <algolia-index>prod_writerside_docs</algolia-index>
+        <algolia-api-key>a4d70a5856082fb64bd9647b01c0605a</algolia-api-key>
         <algolia-show-logo>true</algolia-show-logo> <!-- 무료 플랜이면 true 유지 -->
     </variables>
 
