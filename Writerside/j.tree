@@ -4,7 +4,7 @@
 
 <instance-profile id="j"
                  name="Jakezo"
-                 start-page="starter-topic.md">
+                 start-page="post2.md">
 
     <toc-element topic="post2.md"/>
     <toc-element topic="Tutorial.md"/>
