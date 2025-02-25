@@ -95,6 +95,7 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
+      # ✅ Utterances <div> 삽입 (navigation-links _bottom 위)
       - name: Insert Utterances div before navigation-links
         run: |
           echo "🔧 Adding Utterances <div> before <div class='navigation-links _bottom'>..."
@@ -108,14 +109,12 @@ jobs:
             fi
           done
 
-      - name: Insert Utterances script at the end of body
+      # ✅ 기존 방식으로 <script> 삽입
+      - name: Insert Utterances script
         run: |
-          echo "🔧 Adding Utterances <script> at the end of <body>..."
-          find dir -type f -name '*.html' | while read file; do
-            sed -i '/<\/body>/i \
-            <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
-            echo "✅ Utterances <script> inserted in $file"
-          done
+          echo "🔧 Inserting Utterances script in place of [comment]: # (utterances)"
+          find dir -type f -name '*.html' -exec sed -i 's|\[comment\]: # (utterances)|<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>|g' {} \;
+          echo "✅ Utterances <script> inserted in relevant HTML files"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
