@@ -95,6 +95,11 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
+      # ✅ Utterances 스크립트 삽입
+      - name: Insert Utterances script
+        run: |
+          find dir -type f -name '*.html' -exec sed -i 's|\[comment\]: # (utterances)|<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>|g' {} \;
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

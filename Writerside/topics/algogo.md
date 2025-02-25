@@ -23,6 +23,10 @@
             currnet_index +=1
 
 ```
+
+[comment]: # (utterances)
+
+
 여기도 좀 익히자
 이거 계속 어떻게 할지 생각이 안난다..
 
