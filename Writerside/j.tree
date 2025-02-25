@@ -10,7 +10,9 @@
     <toc-element topic="How-to.md"/>
     <toc-element topic="Tutorial.md"/>
     <toc-element topic="algogo.md"/>
-    <toc-element topic="New-topic.md"/>
+    <toc-element topic="New-topic.md">
+        <toc-element topic="topic-child.md"/>
+    </toc-element>
     <toc-element topic="startPage.md"/>
     <toc-element topic="algoTopicTest.md"/>
     <toc-element topic="starter-topic.md"/>

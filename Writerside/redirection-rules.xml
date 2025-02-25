@@ -14,4 +14,8 @@
         <description>Created after removal of "GitHub과 Writerside 프로젝트 연동 및 배포 가이드 🚀" from Jakezo</description>
         <accepts>GitHub과-Writerside-프로젝트-연동-및-배포-가이드-🚀.html</accepts>
     </rule>
+    <rule id="3e04f250">
+        <description>Created after removal of "토픽 차일드" from Jakezo</description>
+        <accepts>토픽-차일드.html</accepts>
+    </rule>
 </rules>
