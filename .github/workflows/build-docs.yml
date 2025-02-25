@@ -95,15 +95,13 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      - name: Insert Utterances script into all HTML files
+      # ✅ Utterances 스크립트 강제 삽입 (페이지 하단)
+      - name: Insert Utterances script before </body>
         run: |
-          echo "🔍 Checking for [comment]: # (utterances) in .html files..."
-          grep -rn "\[comment\]: # (utterances)" dir || echo "❌ No Utterances comment found in any file."
-          
-          echo "🔧 Adding Utterances script before </body>..."
-          find dir -type f -name '*.html' -exec echo "Processing file: {}" \; \
+          echo "🔧 Adding Utterances script at the end of <body>..."
+          find dir -type f -name '*.html' \
           -exec sed -i 's|</body>|<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script></body>|g' {} \;
-          
+
           echo "✅ Checking if Utterances script was inserted..."
           grep -rn "<script src=\"https://utteranc.es/client.js\"" dir || echo "❌ Utterances script not found!"
 
