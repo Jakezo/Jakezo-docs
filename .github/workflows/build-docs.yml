@@ -95,21 +95,27 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ Utterances 스크립트 삽입 (navigation-links _bottom 위)
-      - name: Insert Utterances script before navigation-links
+      - name: Insert Utterances div before navigation-links
         run: |
-          echo "🔧 Adding Utterances script before <div class='navigation-links _bottom'>..."
+          echo "🔧 Adding Utterances <div> before <div class='navigation-links _bottom'>..."
           find dir -type f -name '*.html' | while read file; do
             if grep -q '<div class="navigation-links _bottom">' "$file"; then
-              sed -i '/<div class="navigation-links _bottom">/i <div id="utterances-comments"></div>\n<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
-              echo "✅ Utterances inserted in $file"
+              sed -i '/<div class="navigation-links _bottom">/i \
+              <div id="utterances-comments"></div>' "$file"
+              echo "✅ Utterances <div> inserted in $file"
             else
               echo "❌ navigation-links not found in $file"
             fi
           done
 
-          echo "✅ Checking if Utterances script was inserted..."
-          grep -rn "<script src=\"https://utteranc.es/client.js\"" dir || echo "❌ Utterances script not found!"
+      - name: Insert Utterances script at the end of body
+        run: |
+          echo "🔧 Adding Utterances <script> at the end of <body>..."
+          find dir -type f -name '*.html' | while read file; do
+            sed -i '/<\/body>/i \
+            <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
+            echo "✅ Utterances <script> inserted in $file"
+          done
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
