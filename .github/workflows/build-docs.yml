@@ -95,27 +95,17 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ 디버깅 코드 1: HTML 파일이 정상적으로 존재하는지 확인
-      - name: Check HTML files before Utterances insertion
+      - name: Insert Utterances script into all HTML files
         run: |
-          echo "Checking HTML files in dir..."
-          find dir -type f -name '*.html' | tee debug-html-files.txt
-
-      # ✅ 디버깅 코드 2: [comment]: # (utterances) 가 HTML 파일 내에 존재하는지 확인
-      - name: Check if Utterances comment exists
-        run: |
-          grep -rn "\[comment\]: # (utterances)" dir || echo "❌ No Utterances comment found"
-
-      # ✅ Utterances 스크립트 삽입
-      - name: Insert Utterances script
-        run: |
-          find dir -type f -name '*.html' \
-          -exec sed -i 's|\[comment\]: # (utterances)|<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>|g' {} \;
-
-      # ✅ 디버깅 코드 3: sed 변환 후, <script> 태그가 정상적으로 들어갔는지 확인
-      - name: Check if Sed worked correctly
-        run: |
-          grep -rn "<script src=\"https://utteranc.es/client.js\"" dir || echo "❌ Utterances script not inserted"
+          echo "🔍 Checking for [comment]: # (utterances) in .html files..."
+          grep -rn "\[comment\]: # (utterances)" dir || echo "❌ No Utterances comment found in any file."
+          
+          echo "🔧 Adding Utterances script before </body>..."
+          find dir -type f -name '*.html' -exec echo "Processing file: {}" \; \
+          -exec sed -i 's|</body>|<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script></body>|g' {} \;
+          
+          echo "✅ Checking if Utterances script was inserted..."
+          grep -rn "<script src=\"https://utteranc.es/client.js\"" dir || echo "❌ Utterances script not found!"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
