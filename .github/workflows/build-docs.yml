@@ -95,21 +95,21 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ Utterances <div> 삽입 (navigation-links _bottom 위)
-      - name: Insert Utterances div before navigation-links
+      # ✅ Utterances <div> 삽입 (article 끝 부분)
+      - name: Insert Utterances div inside article
         run: |
-          echo "🔧 Adding Utterances <div> before <div class='navigation-links _bottom'>..."
+          echo "🔧 Adding Utterances <div> inside <article class='article'>..."
           find dir -type f -name '*.html' | while read file; do
-            if grep -q '<div class="navigation-links _bottom">' "$file"; then
-              sed -i '/<div class="navigation-links _bottom">/i \
+            if grep -q '</article>' "$file"; then
+              sed -i '/<\/article>/i \
               <div id="utterances-comments"></div>' "$file"
               echo "✅ Utterances <div> inserted in $file"
             else
-              echo "❌ navigation-links not found in $file"
+              echo "❌ <article> not found in $file"
             fi
           done
-
-      # ✅ Utterances <script> 삽입 (body 끝부분)
+        
+         # ✅ Utterances <script> 삽입 (body 끝부분)
       - name: Insert Utterances script at the end of body
         run: |
           echo "🔧 Adding Utterances <script> at the end of <body>..."
