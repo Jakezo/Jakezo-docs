@@ -4,13 +4,14 @@
 
 <instance-profile id="j"
                  name="Jakezo"
-                 start-page="post2.md">
+                 start-page="startPage.md">
 
     <toc-element topic="post2.md"/>
     <toc-element topic="How-to.md"/>
     <toc-element topic="Tutorial.md"/>
     <toc-element topic="algogo.md"/>
     <toc-element topic="New-topic.md"/>
+    <toc-element topic="startPage.md"/>
     <toc-element topic="algoTopicTest.md"/>
     <toc-element topic="starter-topic.md"/>
 </instance-profile>
