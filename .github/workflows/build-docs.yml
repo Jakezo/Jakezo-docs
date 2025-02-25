@@ -100,7 +100,7 @@ jobs:
         run: |
           echo "🔧 Adding Utterances script at the end of <body>..."
           find dir -type f -name '*.html' \
-          -exec sed -i 's|</body>|<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script></body>|g' {} \;
+          -exec sed -i 's|<nav class="navigation-links">|<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>\n<nav class="navigation-links">|g' {} \;
 
           echo "✅ Checking if Utterances script was inserted..."
           grep -rn "<script src=\"https://utteranc.es/client.js\"" dir || echo "❌ Utterances script not found!"
