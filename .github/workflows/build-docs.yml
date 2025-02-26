@@ -95,42 +95,43 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ Utterances <div> 삽입 (HTML 구조 변환 후, JavaScript로 위치 조정)
-      - name: Insert Utterances div (JavaScript 활용)
+      # ✅ Markdown 변환 전에 code 내부에 div 포함되는 문제 해결
+      - name: Fix Markdown-generated HTML structure
         run: |
-          echo "🔧 Adding Utterances <div> inside <article class='article'> using JavaScript..."
+          echo "🔧 Fixing Markdown-generated structure issue..."
+          find dir -type f -name '*.html' | while read file; do
+            sed -i 's|<code>\n<div id="utterances-comments"></div>|<div id="utterances-comments"></div>\n<code>|g' "$file"
+            echo "✅ Fixed code block issue in $file"
+          done
+
+      # ✅ JavaScript로 <code> 블록 밖으로 강제 이동
+      - name: Insert JavaScript to move Utterances div
+        run: |
+          echo "🔧 Adding JavaScript to move Utterances div outside of <code> block..."
           find dir -type f -name '*.html' | while read file; do
             if grep -q '</body>' "$file"; then
               sed -i '/<\/body>/i \
               <script> \
               document.addEventListener("DOMContentLoaded", function() { \
-                  var utterancesContainer = document.createElement("div"); \
-                  utterancesContainer.id = "utterances-comments"; \
-                  var article = document.querySelector("article.article"); \
-                  if (article) { \
-                      article.appendChild(utterancesContainer); \
-                      console.log("✅ Utterances div moved successfully!"); \
+                  var utterancesDiv = document.getElementById("utterances-comments"); \
+                  if (utterancesDiv) { \
+                      var article = document.querySelector("article.article"); \
+                      if (article) { \
+                          article.appendChild(utterancesDiv); \
+                          console.log("✅ Utterances div moved outside <code> successfully!"); \
+                      } else { \
+                          console.error("❌ Article element not found!"); \
+                      } \
                   } else { \
-                      console.error("❌ Article element not found!"); \
+                      console.error("❌ Utterances div not found!"); \
                   } \
               }); \
               </script>' "$file"
-              echo "✅ Utterances <div> inserted via JavaScript in $file"
+              echo "✅ Utterances movement script added in $file"
             else
               echo "❌ <body> not found in $file"
             fi
           done
-
-      # ✅ Utterances <script> 삽입 (body 끝부분)
-      - name: Insert Utterances script at the end of body
-        run: |
-          echo "🔧 Adding Utterances <script> at the end of <body>..."
-          find dir -type f -name '*.html' | while read file; do
-            sed -i '/<\/body>/i \
-            <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
-            echo "✅ Utterances <script> inserted in $file"
-          done
-
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
