@@ -94,65 +94,63 @@ jobs:
 
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
-      # ✅ Utterances <div>를 <article> 태그 바깥으로 이동
-      - name: Ensure Utterances div is outside <article>
-        run: |
-          echo "🔧 Moving <div id='utterances-comments'></div> outside <article>..."
-          find dir -type f -name '*.html' | while read file; do
-            # 1. <article> 안에 들어간 <div> 삭제
-            sed -i 's|<article[^>]*>.*<div id="utterances-comments"></div>.*</article>|<article>\n</article>\n<div id="utterances-comments"></div>|g' "$file"
-          
-            # 2. <article> 바깥에서 <aside> 태그 바로 위에 삽입
-            sed -i '/<aside/i \
-            <div id="utterances-comments"></div>' "$file"
 
-            echo "✅ Utterances <div> moved outside <article> and placed before <aside> in $file"
+      # ✅ Utterances <div> 강제 삽입
+      - name: Force Insert Utterances div outside <article>
+        run: |
+          echo "🔧 Ensuring <div id='utterances-comments'></div> is outside <article>..."
+          find dir -type f -name '*.html' | while read file; do
+            # <aside> 태그 있는 경우, 그 바로 위에 <div> 삽입
+            if grep -q '<aside' "$file"; then
+              sed -i '/<aside/i \
+              <div id="utterances-comments"></div>' "$file"
+              echo "✅ Utterances <div> correctly placed before <aside> in $file"
+            else
+              # <aside> 태그가 없는 경우, <body> 끝나기 전에 삽입
+              sed -i '/<\/body>/i \
+              <div id="utterances-comments"></div>' "$file"
+              echo "⚠️ No <aside> found, placing <div> before </body> in $file"
+            fi
           done
 
-      # ✅ Utterances <script>를 <aside> 태그 위 또는 <body> 끝에 삽입
-      - name: Ensure Utterances script is at the end of body
+      # ✅ Utterances <script> 강제 삽입 (무조건 <body> 끝 부분)
+      - name: Force Insert Utterances script at the end of body
         run: |
-          echo "🔧 Moving Utterances <script> before <aside> or at the end of <body>..."
+          echo "🔧 Ensuring Utterances <script> is at the end of <body>..."
           find dir -type f -name '*.html' | while read file; do
-            # 1. <article> 또는 <code> 태그 안에 들어간 <script> 삭제
-            sed -i 's|<article[^>]*>.*<script src="https://utteranc.es/client.js".*</script>.*</article>|<article>\n</article>\n<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>|g' "$file"
-          
-            # 2. <aside> 태그 위에 강제 삽입
-            sed -i '/<aside/i \
-            <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
-
-            # 3. 만약 <aside>가 없는 경우, <body> 끝나기 전에 삽입
+            # 기존 <script> 삭제 후 <body> 끝나기 전에 삽입
+            sed -i '/<script src="https:\/\/utteranc.es\/client.js"/d' "$file"
             sed -i '/<\/body>/i \
             <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
-
-            echo "✅ Utterances <script> moved outside <article> and placed before <aside> in $file"
+            echo "✅ Utterances <script> correctly placed before </body> in $file"
           done
 
-      # ✅ 디버깅: Utterances 스크립트 및 <div> 위치 확인
-      - name: Debug Utterances placement
+      # ✅ 디버깅: 올바른 위치에 들어갔는지 확인
+      - name: Debug Utterances Placement
         run: |
-          echo "🔍 Checking if Utterances div and script are in the correct location..."
+          echo "🔍 Checking Utterances placement in all HTML files..."
           
           find dir -type f -name '*.html' | while read file; do
             echo "🔍 Checking file: $file"
 
-            # <div id="utterances-comments"> 가 <aside> 위에 있는지 확인
+            # <div id="utterances-comments"> 가 <aside> 위 또는 <body> 끝나기 전에 있는지 확인
             if grep -B 5 '<aside' "$file" | grep -q '<div id="utterances-comments"></div>'; then
-              echo "✅ Utterances div correctly placed before <aside> in $file"
+              echo "✅ Utterances <div> correctly placed before <aside> in $file"
+            elif grep -A 5 '</body>' "$file" | grep -q '<div id="utterances-comments"></div>'; then
+              echo "✅ Utterances <div> correctly placed before </body> in $file"
             else
-              echo "❌ Utterances div NOT found before <aside> in $file"
+              echo "❌ Utterances <div> NOT found in the correct location in $file"
             fi
 
-            # <script> 태그가 <aside> 위에 있거나 <body> 끝나기 전에 있는지 확인
-            if grep -B 5 '<aside' "$file" | grep -q '<script src="https://utteranc.es/client.js"'; then
-              echo "✅ Utterances script correctly placed before <aside> in $file"
-            elif grep -A 5 '</body>' "$file" | grep -q '<script src="https://utteranc.es/client.js"'; then
-              echo "✅ Utterances script correctly placed before </body> in $file"
+            # <script> 태그가 <body> 끝나기 전에 있는지 확인
+            if grep -A 5 '</body>' "$file" | grep -q '<script src="https://utteranc.es/client.js"'; then
+              echo "✅ Utterances <script> correctly placed before </body> in $file"
             else
-              echo "❌ Utterances script NOT found in the correct location in $file"
+              echo "❌ Utterances <script> NOT found before </body> in $file"
             fi
 
           done
+
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
