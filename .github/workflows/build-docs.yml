@@ -169,33 +169,38 @@ jobs:
           fi
 
       # ✅ 기존 Pages Artifact 삭제
+      - name: Ensure jq is installed
+        run: sudo apt-get install jq -y
+
       - name: Remove Existing Pages Artifact
         run: |
           echo "🔧 Fetching existing GitHub Pages artifact..."
-          ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          
+          # 현재 실행 중인 GitHub Actions의 아티팩트 리스트에서 'github-pages' 아티팩트 ID 가져오기
+          ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" | jq -r '.artifacts[] | select(.name=="github-pages") | .id')
 
-          if [ -n "$ARTIFACT_ID" ]; then
+          if [[ -n "$ARTIFACT_ID" && "$ARTIFACT_ID" != "null" ]]; then
             echo "🗑️ Removing artifact ID: $ARTIFACT_ID"
-            curl -X DELETE -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          
+            # GitHub API를 사용해 해당 아티팩트 삭제 요청
+            curl -X DELETE -s -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
               "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID"
-            echo "✅ Artifact deleted successfully!"
+          
+            echo "✅ Artifact deleted successfully! Waiting 3 seconds..."
+            sleep 3
           else
             echo "⚠️ No existing GitHub Pages artifact found. Skipping deletion."
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
 
       - name: Upload Modified Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dir
-
-      - name: Deploy Updated GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
   publish-indexes:
     needs: [build, test, deploy]
     runs-on: ubuntu-latest
