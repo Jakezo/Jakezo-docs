@@ -100,31 +100,20 @@ jobs:
         run: |
           echo "🔧 Inserting Disqus comment section into all HTML files..."
           find dir -type f -name '*.html' | while read file; do
-            # 1️⃣ <div class="layout--container-content"> 내부에 삽입 (최우선)
+            # 1️⃣ `.layout--container-content` 내부에 Disqus 삽입
             sed -i '/<div class="layout--container-content">/a \
-            <div id="disqus_thread"></div> \
+            <div id="disqus_thread"></div>' "$file"
+          
+            # 2️⃣ `<script>` 태그를 `<body>` 마지막에 삽입 (DOMContentLoaded 이벤트 활용)
+            sed -i '/<\/body>/i \
             <script> \
-                (function() { \
-                    var d = document, s = d.createElement("script"); \
-                    s.src = "https://jakezo.disqus.com/embed.js"; \
-                    s.setAttribute("data-timestamp", +new Date()); \
-                    (d.head || d.body).appendChild(s); \
-                })(); \
-            </script> \
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>' "$file"
-
-            # 2️⃣ (대체) <div class="navigation-links _bottom"> 아래 삽입
-            sed -i '/<div class="navigation-links _bottom">/a \
-            <div id="disqus_thread"></div> \
-            <script> \
-                (function() { \
-                    var d = document, s = d.createElement("script"); \
-                    s.src = "https://jakezo.disqus.com/embed.js"; \
-                    s.setAttribute("data-timestamp", +new Date()); \
-                    (d.head || d.body).appendChild(s); \
-                })(); \
-            </script> \
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>' "$file"
+            document.addEventListener("DOMContentLoaded", function() { \
+                var d = document, s = d.createElement("script"); \
+                s.src = "https://jakezo.disqus.com/embed.js"; \
+                s.setAttribute("data-timestamp", +new Date()); \
+                (d.head || d.body).appendChild(s); \
+            }); \
+            </script>' "$file"
           done
           echo "✅ Disqus comments successfully added to all HTML files!"
 
