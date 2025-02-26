@@ -119,18 +119,18 @@ jobs:
         with:
           path: dir
 
-      # ✅ 🔍 배포된 GitHub Pages의 HTML을 가져와서 디버깅 (여기에 추가!)
       - name: Debug and Patch deployed HTML
         run: |
           echo "🔍 Fetching deployed HTML from GitHub Pages..."
-          sleep 10  # 배포 지연 방지를 위해 10초 대기
+          sleep 10  # GitHub Pages 배포 지연 방지를 위해 대기
           curl -s "https://jakezo.github.io/Jakezo-docs/algogo.html" -o deployed.html
 
           echo "🔍 Checking if <nav class='navigation-links'> exists in deployed HTML..."
-          if grep -q '<nav class="navigation-links">' deployed.html; then
+          if grep -qi 'navigation-links' deployed.html; then
             echo "✅ navigation-links found! Inserting Utterances <div> above it..."
-          
-            sed -i '/<nav class="navigation-links">/i \
+
+            # `navigation-links` 가 있는 모든 경우를 포괄하여 탐색하고 삽입
+            sed -i '/<div class="navigation-links/,/<\/div>/i \
             <div id="utterances-comments"></div>' deployed.html
           
             echo "✅ Utterances <div> successfully inserted before navigation-links!"
@@ -138,7 +138,7 @@ jobs:
             echo "❌ navigation-links NOT found! Trying alternative placement..."
 
             echo "🔍 Checking if layout--scroll-element exists..."
-            if grep -q 'class="layout layout--container-content layout--scroll-element"' deployed.html; then
+            if grep -qi 'layout--scroll-element' deployed.html; then
               echo "✅ layout--scroll-element found! Inserting Utterances <div> below it..."
           
               sed -i '/class="layout layout--container-content layout--scroll-element"/a \
@@ -148,7 +148,7 @@ jobs:
             else
               echo "❌ layout--scroll-element NOT found! Trying alternative placement..."
           
-              if grep -q 'class="layout layout--container-content layout--scroll-element"' deployed.html; then
+              if grep -qi 'layout--container-content layout--scroll-element' deployed.html; then
                 sed -i '/class="layout layout--container-content layout--scroll-element"/i \
                 <div id="utterances-comments"></div>' deployed.html
           
@@ -167,6 +167,7 @@ jobs:
           else
             echo "✅ Utterances <script> already present in deployed HTML!"
           fi
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
