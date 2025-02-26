@@ -95,21 +95,21 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ Utterances <div> 삽입 (article 끝 부분)
-      - name: Insert Utterances div inside article
+      # ✅ Utterances <div> 삽입 (section 내부)
+      - name: Insert Utterances div inside section
         run: |
-          echo "🔧 Adding Utterances <div> inside <article class='article'>..."
+          echo "🔧 Adding Utterances <div> inside <section class='panel__content'>..."
           find dir -type f -name '*.html' | while read file; do
-            if grep -q '</article>' "$file"; then
-              sed -i '/<\/article>/i \
+            if grep -q '</section>' "$file"; then
+              sed -i '/<\/section>/i \
               <div id="utterances-comments"></div>' "$file"
               echo "✅ Utterances <div> inserted in $file"
             else
-              echo "❌ <article> not found in $file"
+              echo "❌ <section> not found in $file"
             fi
           done
-        
-         # ✅ Utterances <script> 삽입 (body 끝부분)
+
+      # ✅ Utterances <script> 삽입 (body 끝부분)
       - name: Insert Utterances script at the end of body
         run: |
           echo "🔧 Adding Utterances <script> at the end of <body>..."
@@ -117,18 +117,6 @@ jobs:
             sed -i '/<\/body>/i \
             <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
             echo "✅ Utterances <script> inserted in $file"
-          done
-
-      # ✅ 디버깅: Utterances 스크립트가 제대로 삽입되었는지 확인
-      - name: Debug Utterances script insertion
-        run: |
-          echo "🔍 Checking if Utterances script is inserted in HTML files..."
-          find dir -type f -name '*.html' | while read file; do
-            if grep -q '<script src="https://utteranc.es/client.js"' "$file"; then
-              echo "✅ Utterances script found in $file"
-            else
-              echo "❌ Utterances script NOT found in $file"
-            fi
           done
 
       - name: Setup Pages
