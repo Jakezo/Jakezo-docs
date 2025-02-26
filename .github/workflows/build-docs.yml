@@ -106,22 +106,28 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      # ✅ 배포된 GitHub Pages HTML 파일 가져와서 확인 후 강제 삽입
+      # ✅ 🔍 배포된 GitHub Pages HTML 파일 가져와서 확인 후 강제 삽입
       - name: Debug and Patch deployed HTML
         run: |
           echo "🔍 Fetching deployed HTML from GitHub Pages..."
-          wget -q -O deployed.html "https://jakezo.github.io/Jakezo-docs/algogo.html"
-
-          echo "🔍 Checking if <nav class='navigation-links'> exists in deployed HTML..."
-          if grep -q '<nav class="navigation-links">' deployed.html; then
-            echo "✅ navigation-links found! Inserting Utterances <div>..."
           
-            sed -i '/<nav class="navigation-links">/i \
+          # 최신 페이지가 반영될 시간을 기다림 (10초 대기)
+          sleep 10
+          
+          # 정확한 HTML을 가져오기 위해 curl 사용
+          curl -s "https://jakezo.github.io/Jakezo-docs/algogo.html" -o deployed.html
+
+          echo "🔍 Checking if <body> exists in deployed HTML..."
+          if grep -q '<body' deployed.html; then
+            echo "✅ <body> tag found! Inserting Utterances <div> immediately after <body>..."
+
+            # <body> 태그 바로 다음에 Utterances <div> 삽입
+            sed -i '/<body.*/a \
             <div id="utterances-comments"></div>' deployed.html
           
-            echo "✅ Utterances <div> successfully inserted before <navigation-links>!"
+            echo "✅ Utterances <div> successfully inserted right after <body>!"
           else
-            echo "❌ navigation-links NOT found in deployed HTML!"
+            echo "❌ <body> tag NOT found in deployed HTML! Skipping insertion."
           fi
 
           echo "🔍 Checking if Utterances <script> is at the end of <body>..."
@@ -132,7 +138,6 @@ jobs:
           else
             echo "✅ Utterances <script> already present in deployed HTML!"
           fi
-
       # ✅ 다시 GitHub Pages에 업로드
       - name: Deploy patched HTML to GitHub Pages
         uses: actions/deploy-pages@v4
