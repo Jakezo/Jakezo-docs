@@ -95,6 +95,18 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
+      - name: Modify built HTML before upload
+        run: |
+          echo "🔧 Modifying Writerside-built HTML before deployment..."
+
+          find dir -type f -name '*.html' | while read file; do
+            # <nav class="navigation-links"> 바로 위에 추가
+            sed -i '/<nav class="navigation-links">/i \
+            <div id="utterances-comments"></div>' "$file"
+          done
+
+          echo "✅ Writerside-built HTML updated with Utterances <div>!"
+
       - name: Debug built HTML before upload
         run: |
           echo "🔍 Checking Writerside build output before upload..."
