@@ -95,6 +95,7 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
+      # ✅ Utterances <div> 삽입 (code 안으로 들어가지 않게)
       - name: Ensure Utterances div is correctly inserted
         run: |
           echo "🔧 Ensuring <div id='utterances-comments'></div> is correctly inserted..."
@@ -108,6 +109,21 @@ jobs:
             fi
           done
 
+      # ✅ Utterances <script> 삽입 (body 끝이 아닌, 완전히 body 바깥)
+      - name: Insert Utterances script outside body
+        run: |
+          echo "🔧 Adding Utterances <script> outside <body>..."
+          find dir -type f -name '*.html' | while read file; do
+            if grep -q '</html>' "$file"; then
+              sed -i '/<\/html>/i \
+              <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
+              echo "✅ Utterances <script> inserted outside body in $file"
+            else
+              echo "❌ <html> not found in $file"
+            fi
+          done
+
+      # ✅ Utterances <div>가 잘못된 위치 (code 내부)로 들어간 경우 자동 이동
       - name: Insert JavaScript to fix Utterances div placement
         run: |
           echo "🔧 Adding JavaScript to fix Utterances div placement..."
@@ -135,6 +151,7 @@ jobs:
               echo "❌ <body> not found in $file"
             fi
           done
+
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
