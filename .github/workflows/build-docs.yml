@@ -99,26 +99,10 @@ jobs:
       - name: Insert Disqus into HTML files
         run: |
           echo "🔧 Inserting Disqus comment section into all HTML files..."
-          find dir -type f -name '*.html' | while read file; do
-            # 1️⃣ <div class="last-modified"> 바로 뒤에 삽입 (추천)
-            sed -i '/<div class="last-modified">/a \
-            <div id="disqus_thread"></div> \
-            <script> \
-                (function() { \
-                    var d = document, s = d.createElement("script"); \
-                    s.src = "https://jakezo.disqus.com/embed.js"; \
-                    s.setAttribute("data-timestamp", +new Date()); \
-                    (d.head || d.body).appendChild(s); \
-                })(); \
-            </script> \
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>' "$file"
-
-            # 2️⃣ (대체) <div class="navigation-links _bottom"> 아래 삽입
-            sed -i '/<div class="navigation-links _bottom">/a \
-            <div id="disqus_thread"></div> \
-            <script> \
-                (function() { \
-                    var d = document, s = d.createElement("script"); \
+          find output_dir -type f -name "*.html" -exec sed -i '/<\/div>\s*<\/div>\s*$/i \
+          <div id="disqus_thread"></div>\n\
+          <script>\n\
+          var d=document,s=d.createElement("script");\n\
                     s.src = "https://jakezo.disqus.com/embed.js"; \
                     s.setAttribute("data-timestamp", +new Date()); \
                     (d.head || d.body).appendChild(s); \
