@@ -95,84 +95,21 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ Utterances <div>를 <navigation-links> 위에 강제 배치
-      - name: Force Move Utterances div BEFORE navigation-links
+      - name: Debug built HTML before upload
         run: |
-          echo "🔧 Ensuring <div id='utterances-comments'></div> is placed BEFORE <navigation-links>..."
+          echo "🔍 Checking Writerside build output before upload..."
 
-          find dir -type f -name '*.html' | while read file; do
-            # 1️⃣ <code> 내부에 잘못 들어간 div 제거
-            sed -i '/<code>/,/<\/code>/ s|<div id="utterances-comments"></div>||g' "$file"
+          unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d temp_dir
 
-            # 2️⃣ 기존 Utterances <div>가 있으면 제거
-            sed -i '/<div id="utterances-comments">/d' "$file"
+          echo "🔍 Checking if <nav class='navigation-links'> exists..."
+          grep -rn '<nav class="navigation-links">' temp_dir || echo "❌ navigation-links NOT found in built HTML!"
 
-            # 3️⃣ <navigation-links> 태그가 존재하는 경우, 그 바로 위에 추가
-            if grep -q '<nav class="navigation-links">' "$file"; then
-              sed -i '/<nav class="navigation-links">/i \
-              <div id="utterances-comments"></div>' "$file"
-              echo "✅ Utterances <div> placed BEFORE <navigation-links> in $file"
-            else
-              # <navigation-links>이 없으면 <article> 끝에 배치
-              sed -i '/<\/article>/a \
-              <div id="utterances-comments"></div>' "$file"
-              echo "⚠️ No <navigation-links> found, placing <div> after </article> in $file"
-            fi
-          done
+          echo "🔍 Checking if Utterances <div> is in correct position..."
+          grep -rn '<div id="utterances-comments"></div>' temp_dir || echo "❌ Utterances div NOT found!"
 
-      # ✅ Utterances <script>를 <body> 끝나기 직전에 강제 배치
-      - name: Force Move Utterances script AT END OF <body>
-        run: |
-          echo "🔧 Ensuring Utterances <script> is at the end of <body>..."
+          echo "🔍 Checking if Utterances <script> is at the end of <body>..."
+          grep -rn '<script src="https://utteranc.es/client.js"' temp_dir || echo "❌ Utterances script NOT found!"
 
-          find dir -type f -name '*.html' | while read file; do
-            # 1️⃣ <code> 태그 내부에 잘못 들어간 script 제거
-            sed -i '/<code>/,/<\/code>/ s|<script src="https:\/\/utteranc.es\/client.js".*||g' "$file"
-
-            # 2️⃣ 기존 Utterances script 제거 후 <body> 끝나기 전에 정확히 삽입
-            sed -i '/<script src="https:\/\/utteranc.es\/client.js"/d' "$file"
-            sed -i '/<\/body>/i \
-            <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
-            echo "✅ Utterances <script> correctly moved to the end of <body> in $file"
-          done
-
-      # ✅ 디버깅 및 검증: 올바른 위치인지 다시 체크
-      - name: Debug Utterances Placement (Final Check)
-        run: |
-          echo "🔍 Final Checking Utterances placement in all HTML files..."
-          
-          find dir -type f -name '*.html' | while read file; do
-            echo "🔍 Checking file: $file"
-
-            # 1️⃣ <div>가 <code> 내부가 아닌지 확인
-            if grep -A 5 '</code>' "$file" | grep -q '<div id="utterances-comments"></div>'; then
-              echo "❌ ERROR: Utterances <div> is INSIDE <code> in $file - FIX FAILED!"
-            else
-              echo "✅ SUCCESS: Utterances <div> is correctly placed outside <code> in $file"
-            fi
-
-            # 2️⃣ <div>가 <navigation-links> 바로 위에 있는지 확인
-            if grep -B 5 '<nav class="navigation-links">' "$file" | grep -q '<div id="utterances-comments"></div>'; then
-              echo "✅ SUCCESS: Utterances <div> correctly placed BEFORE <navigation-links> in $file"
-            else
-              echo "❌ ERROR: Utterances <div> NOT found before <navigation-links> in $file"
-            fi
-
-            # 3️⃣ <script> 태그가 <code> 내부가 아닌지 확인
-            if grep -A 5 '</code>' "$file" | grep -q '<script src="https://utteranc.es/client.js"'; then
-              echo "❌ ERROR: Utterances <script> is INSIDE <code> in $file - FIX FAILED!"
-            else
-              echo "✅ SUCCESS: Utterances <script> is correctly placed outside <code> in $file"
-            fi
-
-            # 4️⃣ <script> 태그가 <body> 끝나기 전에 있는지 확인
-            if grep -A 5 '</body>' "$file" | grep -q '<script src="https://utteranc.es/client.js"'; then
-              echo "✅ SUCCESS: Utterances <script> correctly placed before </body> in $file"
-            else
-              echo "❌ ERROR: Utterances <script> NOT found before </body> in $file"
-            fi
-
-          done
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -181,6 +118,21 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dir
+
+      # ✅ 🔍 배포된 GitHub Pages의 HTML을 가져와서 디버깅 (여기에 추가!)
+      - name: Debug deployed HTML
+        run: |
+          echo "🔍 Fetching deployed HTML from GitHub Pages..."
+          wget -q -O deployed.html "https://jakezo.github.io/Jakezo-docs/algogo.html"
+
+          echo "🔍 Checking if <nav class='navigation-links'> exists in deployed HTML..."
+          grep -i 'navigation-links' deployed.html || echo "❌ navigation-links NOT found in deployed HTML!"
+
+          echo "🔍 Checking if Utterances <div> is in correct position in deployed HTML..."
+          grep -i '<div id="utterances-comments"></div>' deployed.html || echo "❌ Utterances div NOT found in deployed HTML!"
+
+          echo "🔍 Checking if Utterances <script> is at the end of <body> in deployed HTML..."
+          grep -i '<script src="https://utteranc.es/client.js"' deployed.html || echo "❌ Utterances script NOT found in deployed HTML!"          
 
       - name: Deploy to GitHub Pages
         id: deployment
