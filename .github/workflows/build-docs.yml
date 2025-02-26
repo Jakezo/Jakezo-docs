@@ -120,20 +120,53 @@ jobs:
           path: dir
 
       # ✅ 🔍 배포된 GitHub Pages의 HTML을 가져와서 디버깅 (여기에 추가!)
-      - name: Debug deployed HTML
+      - name: Debug and Patch deployed HTML
         run: |
           echo "🔍 Fetching deployed HTML from GitHub Pages..."
-          wget -q -O deployed.html "https://jakezo.github.io/Jakezo-docs/algogo.html"
+          sleep 10  # 배포 지연 방지를 위해 10초 대기
+          curl -s "https://jakezo.github.io/Jakezo-docs/algogo.html" -o deployed.html
 
           echo "🔍 Checking if <nav class='navigation-links'> exists in deployed HTML..."
-          grep -i 'navigation-links' deployed.html || echo "❌ navigation-links NOT found in deployed HTML!"
+          if grep -q '<nav class="navigation-links">' deployed.html; then
+            echo "✅ navigation-links found! Inserting Utterances <div> above it..."
+          
+            sed -i '/<nav class="navigation-links">/i \
+            <div id="utterances-comments"></div>' deployed.html
+          
+            echo "✅ Utterances <div> successfully inserted before navigation-links!"
+          else
+            echo "❌ navigation-links NOT found! Trying alternative placement..."
 
-          echo "🔍 Checking if Utterances <div> is in correct position in deployed HTML..."
-          grep -i '<div id="utterances-comments"></div>' deployed.html || echo "❌ Utterances div NOT found in deployed HTML!"
+            echo "🔍 Checking if layout--scroll-element exists..."
+            if grep -q 'class="layout layout--container-content layout--scroll-element"' deployed.html; then
+              echo "✅ layout--scroll-element found! Inserting Utterances <div> below it..."
+          
+              sed -i '/class="layout layout--container-content layout--scroll-element"/a \
+              <div id="utterances-comments"></div>' deployed.html
+          
+              echo "✅ Utterances <div> successfully inserted after layout--scroll-element!"
+            else
+              echo "❌ layout--scroll-element NOT found! Trying alternative placement..."
+          
+              if grep -q 'class="layout layout--container-content layout--scroll-element"' deployed.html; then
+                sed -i '/class="layout layout--container-content layout--scroll-element"/i \
+                <div id="utterances-comments"></div>' deployed.html
+          
+                echo "✅ Utterances <div> inserted before layout--container-content layout--scroll-element!"
+              else
+                echo "❌ No suitable layout found for insertion!"
+              fi
+            fi
+          fi
 
-          echo "🔍 Checking if Utterances <script> is at the end of <body> in deployed HTML..."
-          grep -i '<script src="https://utteranc.es/client.js"' deployed.html || echo "❌ Utterances script NOT found in deployed HTML!"          
-
+          echo "🔍 Checking if Utterances <script> is at the end of <body>..."
+          if ! grep -q '<script src="https://utteranc.es/client.js"' deployed.html; then
+            sed -i '/<\/body>/i \
+            <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' deployed.html
+            echo "✅ Utterances <script> successfully inserted before </body>!"
+          else
+            echo "✅ Utterances <script> already present in deployed HTML!"
+          fi
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
