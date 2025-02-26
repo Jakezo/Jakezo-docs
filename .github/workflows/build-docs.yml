@@ -111,7 +111,7 @@ jobs:
                     (d.head || d.body).appendChild(s); \
                 })(); \
             </script> \
-            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>' "$fileㅋ
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>' "$file"
 
             # 2️⃣ (대체) <div class="navigation-links _bottom"> 아래 삽입
             sed -i '/<div class="navigation-links _bottom">/a \
