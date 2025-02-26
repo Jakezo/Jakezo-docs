@@ -95,22 +95,6 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      - name: Debug built HTML before upload
-        run: |
-          echo "🔍 Checking Writerside build output before upload..."
-
-          unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d temp_dir
-
-          echo "🔍 Checking if <nav class='navigation-links'> exists..."
-          grep -rn '<nav class="navigation-links">' temp_dir || echo "❌ navigation-links NOT found in built HTML!"
-
-          echo "🔍 Checking if Utterances <div> is in correct position..."
-          grep -rn '<div id="utterances-comments"></div>' temp_dir || echo "❌ Utterances div NOT found!"
-
-          echo "🔍 Checking if Utterances <script> is at the end of <body>..."
-          grep -rn '<script src="https://utteranc.es/client.js"' temp_dir || echo "❌ Utterances script NOT found!"
-
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
@@ -122,21 +106,36 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-
-      # ✅ 🔍 배포된 GitHub Pages의 HTML을 가져와서 디버깅 (여기에 추가!)
-      - name: Debug deployed HTML
+      # ✅ 배포된 GitHub Pages HTML 파일 가져와서 확인 후 강제 삽입
+      - name: Debug and Patch deployed HTML
         run: |
           echo "🔍 Fetching deployed HTML from GitHub Pages..."
           wget -q -O deployed.html "https://jakezo.github.io/Jakezo-docs/algogo.html"
 
           echo "🔍 Checking if <nav class='navigation-links'> exists in deployed HTML..."
-          grep -i 'navigation-links' deployed.html || echo "❌ navigation-links NOT found in deployed HTML!"
+          if grep -q '<nav class="navigation-links">' deployed.html; then
+            echo "✅ navigation-links found! Inserting Utterances <div>..."
+          
+            sed -i '/<nav class="navigation-links">/i \
+            <div id="utterances-comments"></div>' deployed.html
+          
+            echo "✅ Utterances <div> successfully inserted before <navigation-links>!"
+          else
+            echo "❌ navigation-links NOT found in deployed HTML!"
+          fi
 
-          echo "🔍 Checking if Utterances <div> is in correct position in deployed HTML..."
-          grep -i '<div id="utterances-comments"></div>' deployed.html || echo "❌ Utterances div NOT found in deployed HTML!"
+          echo "🔍 Checking if Utterances <script> is at the end of <body>..."
+          if ! grep -q '<script src="https://utteranc.es/client.js"' deployed.html; then
+            sed -i '/<\/body>/i \
+            <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' deployed.html
+            echo "✅ Utterances <script> successfully inserted before </body>!"
+          else
+            echo "✅ Utterances <script> already present in deployed HTML!"
+          fi
 
-          echo "🔍 Checking if Utterances <script> is at the end of <body> in deployed HTML..."
-          grep -i '<script src="https://utteranc.es/client.js"' deployed.html || echo "❌ Utterances script NOT found in deployed HTML!"          
+      # ✅ 다시 GitHub Pages에 업로드
+      - name: Deploy patched HTML to GitHub Pages
+        uses: actions/deploy-pages@v4
 
   publish-indexes:
     needs: [build, test, deploy]
