@@ -95,19 +95,22 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ Markdown 변환 전에 code 내부에 div 포함되는 문제 해결
-      - name: Fix Markdown-generated HTML structure
+      - name: Ensure Utterances div is correctly inserted
         run: |
-          echo "🔧 Fixing Markdown-generated structure issue..."
+          echo "🔧 Ensuring <div id='utterances-comments'></div> is correctly inserted..."
           find dir -type f -name '*.html' | while read file; do
-            sed -i 's|<code>\n<div id="utterances-comments"></div>|<div id="utterances-comments"></div>\n<code>|g' "$file"
-            echo "✅ Fixed code block issue in $file"
+            if grep -q '</article>' "$file"; then
+              sed -i '/<\/article>/i \
+              <div id="utterances-comments"></div>' "$file"
+              echo "✅ Utterances <div> inserted in $file"
+            else
+              echo "❌ <article> not found in $file"
+            fi
           done
 
-      # ✅ JavaScript로 <code> 블록 밖으로 강제 이동
-      - name: Insert JavaScript to move Utterances div
+      - name: Insert JavaScript to fix Utterances div placement
         run: |
-          echo "🔧 Adding JavaScript to move Utterances div outside of <code> block..."
+          echo "🔧 Adding JavaScript to fix Utterances div placement..."
           find dir -type f -name '*.html' | while read file; do
             if grep -q '</body>' "$file"; then
               sed -i '/<\/body>/i \
@@ -127,7 +130,7 @@ jobs:
                   } \
               }); \
               </script>' "$file"
-              echo "✅ Utterances movement script added in $file"
+              echo "✅ JavaScript added to move Utterances div in $file"
             else
               echo "❌ <body> not found in $file"
             fi
