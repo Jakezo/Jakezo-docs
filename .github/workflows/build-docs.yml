@@ -98,30 +98,33 @@ jobs:
       - name: Modify built HTML before upload
         run: |
           echo "🔧 Modifying Writerside-built HTML before deployment..."
-
+          
           find dir -type f -name '*.html' | while read file; do
-            # <nav class="navigation-links"> 바로 위에 추가
-            sed -i '/<nav class="navigation-links">/i \
-            <div id="utterances-comments"></div>' "$file"
+            if grep -q '<nav class="navigation-links">' "$file"; then
+              echo "✅ Found <nav class='navigation-links'> in $file. Adding Utterances <div> before it..."
+              sed -i '/<nav class="navigation-links">/i \
+              <div id="utterances-comments"></div>' "$file"
+            else
+              echo "⚠️ No <nav class='navigation-links'> found in $file. Skipping..."
+            fi
           done
 
           echo "✅ Writerside-built HTML updated with Utterances <div>!"
 
+
       - name: Debug built HTML before upload
         run: |
           echo "🔍 Checking Writerside build output before upload..."
-
-          unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d temp_dir
-
-          echo "🔍 Checking if <nav class='navigation-links'> exists..."
-          grep -rn '<nav class="navigation-links">' temp_dir || echo "❌ navigation-links NOT found in built HTML!"
-
-          echo "🔍 Checking if Utterances <div> is in correct position..."
-          grep -rn '<div id="utterances-comments"></div>' temp_dir || echo "❌ Utterances div NOT found!"
-
-          echo "🔍 Checking if Utterances <script> is at the end of <body>..."
-          grep -rn '<script src="https://utteranc.es/client.js"' temp_dir || echo "❌ Utterances script NOT found!"
-
+          
+          find dir -type f -name '*.html' | while read file; do
+            echo "🔍 Checking file: $file"
+          
+            if grep -q '<div id="utterances-comments"></div>' "$file"; then
+              echo "✅ Utterances <div> FOUND in $file"
+            else
+              echo "❌ ERROR: Utterances <div> NOT found in $file"
+            fi
+          done
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -213,6 +216,13 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dir
+
+      - name: Force GitHub Pages Deployment
+        run: |
+          echo "🔧 Triggering GitHub Pages deployment..."
+          curl -X POST -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds"
   publish-indexes:
     needs: [build, test, deploy]
     runs-on: ubuntu-latest
