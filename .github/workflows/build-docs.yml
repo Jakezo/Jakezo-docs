@@ -192,7 +192,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dir
-          overwrite: true
 
       - name: Deploy Updated GitHub Pages
         id: deployment
