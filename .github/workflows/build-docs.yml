@@ -95,10 +95,27 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ Utterances 스크립트 삽입
-      - name: Insert Utterances script
+      # ✅ Disqus 댓글 시스템 자동 삽입
+      - name: Insert Disqus into HTML files
         run: |
-          find dir -type f -name '*.html' -exec sed -i 's|\[comment\]: # (utterances)|<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script>|g' {} \;
+          echo "🔧 Inserting Disqus comment section into all HTML files..."
+
+          find dir -type f -name '*.html' | while read file; do
+            # <body> 태그 바로 아래에 Disqus 코드 삽입
+            sed -i '/<body>/a \
+            <div id="disqus_thread"></div> \
+            <script> \
+                (function() { \
+                    var d = document, s = d.createElement(\"script\"); \
+                    s.src = \"https://jakezo.disqus.com/embed.js\"; \
+                    s.setAttribute(\"data-timestamp\", +new Date()); \
+                    (d.head || d.body).appendChild(s); \
+                })(); \
+            </script> \
+            <noscript>Please enable JavaScript to view the <a href=\"https://disqus.com/?ref_noscript\">comments powered by Disqus.</a></noscript>' "$file"
+          done
+
+          echo "✅ Disqus comments successfully added to all HTML files!"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
