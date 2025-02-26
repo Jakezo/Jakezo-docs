@@ -110,24 +110,20 @@ jobs:
       - name: Debug and Patch deployed HTML
         run: |
           echo "🔍 Fetching deployed HTML from GitHub Pages..."
-          
-          # 최신 페이지가 반영될 시간을 기다림 (10초 대기)
-          sleep 10
-          
-          # 정확한 HTML을 가져오기 위해 curl 사용
+          sleep 10  # 배포 지연 방지를 위해 10초 대기
           curl -s "https://jakezo.github.io/Jakezo-docs/algogo.html" -o deployed.html
 
-          echo "🔍 Checking if <body> exists in deployed HTML..."
-          if grep -q '<body' deployed.html; then
-            echo "✅ <body> tag found! Inserting Utterances <div> immediately after <body>..."
-
-            # <body> 태그 바로 다음에 Utterances <div> 삽입
-            sed -i '/<body.*/a \
+          echo "🔍 Checking if layout container exists..."
+          if grep -q 'class="layout layout--container-content layout--scroll-element"' deployed.html; then
+            echo "✅ Target layout container found! Inserting Utterances <div>..."
+          
+            # `layout--scroll-element` 바로 아래에 `<div>` 삽입
+            sed -i '/class="layout layout--container-content layout--scroll-element"/a \
             <div id="utterances-comments"></div>' deployed.html
           
-            echo "✅ Utterances <div> successfully inserted right after <body>!"
+            echo "✅ Utterances <div> successfully inserted after target layout!"
           else
-            echo "❌ <body> tag NOT found in deployed HTML! Skipping insertion."
+            echo "❌ Target layout container NOT found! Skipping <div> insertion."
           fi
 
           echo "🔍 Checking if Utterances <script> is at the end of <body>..."
