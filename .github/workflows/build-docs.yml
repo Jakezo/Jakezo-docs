@@ -94,64 +94,65 @@ jobs:
 
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
-
-      # ✅ Utterances <div> 삽입 (code 안으로 들어가지 않게)
-      - name: Ensure Utterances div is correctly inserted
+      # ✅ Utterances <div>를 <article> 태그 바깥으로 이동
+      - name: Ensure Utterances div is outside <article>
         run: |
-          echo "🔧 Ensuring <div id='utterances-comments'></div> is correctly inserted..."
+          echo "🔧 Moving <div id='utterances-comments'></div> outside <article>..."
           find dir -type f -name '*.html' | while read file; do
-            if grep -q '</article>' "$file"; then
-              sed -i '/<\/article>/i \
-              <div id="utterances-comments"></div>' "$file"
-              echo "✅ Utterances <div> inserted in $file"
-            else
-              echo "❌ <article> not found in $file"
-            fi
+            # 1. <article> 안에 들어간 <div> 삭제
+            sed -i 's|<article[^>]*>.*<div id="utterances-comments"></div>.*</article>|<article>\n</article>\n<div id="utterances-comments"></div>|g' "$file"
+          
+            # 2. <article> 바깥에서 <aside> 태그 바로 위에 삽입
+            sed -i '/<aside/i \
+            <div id="utterances-comments"></div>' "$file"
+
+            echo "✅ Utterances <div> moved outside <article> and placed before <aside> in $file"
           done
 
-      # ✅ Utterances <script> 삽입 (body 끝이 아닌, 완전히 body 바깥)
-      - name: Insert Utterances script outside body
+      # ✅ Utterances <script>를 <aside> 태그 위 또는 <body> 끝에 삽입
+      - name: Ensure Utterances script is at the end of body
         run: |
-          echo "🔧 Adding Utterances <script> outside <body>..."
+          echo "🔧 Moving Utterances <script> before <aside> or at the end of <body>..."
           find dir -type f -name '*.html' | while read file; do
-            if grep -q '</html>' "$file"; then
-              sed -i '/<\/html>/i \
-              <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
-              echo "✅ Utterances <script> inserted outside body in $file"
-            else
-              echo "❌ <html> not found in $file"
-            fi
+            # 1. <article> 또는 <code> 태그 안에 들어간 <script> 삭제
+            sed -i 's|<article[^>]*>.*<script src="https://utteranc.es/client.js".*</script>.*</article>|<article>\n</article>\n<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>|g' "$file"
+          
+            # 2. <aside> 태그 위에 강제 삽입
+            sed -i '/<aside/i \
+            <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
+
+            # 3. 만약 <aside>가 없는 경우, <body> 끝나기 전에 삽입
+            sed -i '/<\/body>/i \
+            <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' "$file"
+
+            echo "✅ Utterances <script> moved outside <article> and placed before <aside> in $file"
           done
 
-      # ✅ Utterances <div>가 잘못된 위치 (code 내부)로 들어간 경우 자동 이동
-      - name: Insert JavaScript to fix Utterances div placement
+      # ✅ 디버깅: Utterances 스크립트 및 <div> 위치 확인
+      - name: Debug Utterances placement
         run: |
-          echo "🔧 Adding JavaScript to fix Utterances div placement..."
+          echo "🔍 Checking if Utterances div and script are in the correct location..."
+          
           find dir -type f -name '*.html' | while read file; do
-            if grep -q '</body>' "$file"; then
-              sed -i '/<\/body>/i \
-              <script> \
-              document.addEventListener("DOMContentLoaded", function() { \
-                  var utterancesDiv = document.getElementById("utterances-comments"); \
-                  if (utterancesDiv) { \
-                      var article = document.querySelector("article.article"); \
-                      if (article) { \
-                          article.appendChild(utterancesDiv); \
-                          console.log("✅ Utterances div moved outside <code> successfully!"); \
-                      } else { \
-                          console.error("❌ Article element not found!"); \
-                      } \
-                  } else { \
-                      console.error("❌ Utterances div not found!"); \
-                  } \
-              }); \
-              </script>' "$file"
-              echo "✅ JavaScript added to move Utterances div in $file"
-            else
-              echo "❌ <body> not found in $file"
-            fi
-          done
+            echo "🔍 Checking file: $file"
 
+            # <div id="utterances-comments"> 가 <aside> 위에 있는지 확인
+            if grep -B 5 '<aside' "$file" | grep -q '<div id="utterances-comments"></div>'; then
+              echo "✅ Utterances div correctly placed before <aside> in $file"
+            else
+              echo "❌ Utterances div NOT found before <aside> in $file"
+            fi
+
+            # <script> 태그가 <aside> 위에 있거나 <body> 끝나기 전에 있는지 확인
+            if grep -B 5 '<aside' "$file" | grep -q '<script src="https://utteranc.es/client.js"'; then
+              echo "✅ Utterances script correctly placed before <aside> in $file"
+            elif grep -A 5 '</body>' "$file" | grep -q '<script src="https://utteranc.es/client.js"'; then
+              echo "✅ Utterances script correctly placed before </body> in $file"
+            else
+              echo "❌ Utterances script NOT found in the correct location in $file"
+            fi
+
+          done
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
