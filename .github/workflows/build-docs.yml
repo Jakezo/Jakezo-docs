@@ -168,11 +168,22 @@ jobs:
             echo "✅ Utterances <script> already present in deployed HTML!"
           fi
 
-      # ✅ **변경된 파일을 다시 GitHub Pages에 업로드**
-      - name: Re-upload Modified Pages Artifact
+      # ✅ 기존 Pages Artifact 삭제
+      - name: Remove Existing Pages Artifact
+        run: |
+          echo "🔧 Removing existing GitHub Pages artifact..."
+          gh api --method DELETE \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ✅ 변경된 HTML을 다시 GitHub Pages에 업로드
+      - name: Upload Modified Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dir
+          overwrite: true
 
       - name: Deploy to GitHub Pages
         id: deployment
