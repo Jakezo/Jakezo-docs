@@ -171,21 +171,30 @@ jobs:
       # ✅ 기존 Pages Artifact 삭제
       - name: Remove Existing Pages Artifact
         run: |
-          echo "🔧 Removing existing GitHub Pages artifact..."
-          gh api --method DELETE \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts"
+          echo "🔧 Fetching existing GitHub Pages artifact..."
+          ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" | jq -r '.artifacts[] | select(.name=="github-pages") | .id')
+
+          if [ -n "$ARTIFACT_ID" ]; then
+            echo "🗑️ Removing artifact ID: $ARTIFACT_ID"
+            curl -X DELETE -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID"
+            echo "✅ Artifact deleted successfully!"
+          else
+            echo "⚠️ No existing GitHub Pages artifact found. Skipping deletion."
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ✅ 변경된 HTML을 다시 GitHub Pages에 업로드
       - name: Upload Modified Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dir
           overwrite: true
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy Updated GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
   publish-indexes:
