@@ -118,6 +118,10 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dir
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
 
       # ✅ 🔍 배포된 GitHub Pages의 HTML을 가져와서 디버깅 (여기에 추가!)
       - name: Debug deployed HTML
@@ -134,9 +138,6 @@ jobs:
           echo "🔍 Checking if Utterances <script> is at the end of <body> in deployed HTML..."
           grep -i '<script src="https://utteranc.es/client.js"' deployed.html || echo "❌ Utterances script NOT found in deployed HTML!"          
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
   publish-indexes:
     needs: [build, test, deploy]
     runs-on: ubuntu-latest
