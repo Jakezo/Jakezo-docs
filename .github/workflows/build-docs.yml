@@ -95,36 +95,10 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      - name: Modify built HTML before upload
+      # ✅ Utterances 스크립트 삽입
+      - name: Insert Utterances script
         run: |
-          echo "🔧 Modifying Writerside-built HTML before deployment..."
-          
-          find dir -type f -name '*.html' | while read file; do
-            if grep -q '<nav class="navigation-links">' "$file"; then
-              echo "✅ Found <nav class='navigation-links'> in $file. Adding Utterances <div> before it..."
-              sed -i '/<nav class="navigation-links">/i \
-              <div id="utterances-comments"></div>' "$file"
-            else
-              echo "⚠️ No <nav class='navigation-links'> found in $file. Skipping..."
-            fi
-          done
-
-          echo "✅ Writerside-built HTML updated with Utterances <div>!"
-
-
-      - name: Debug built HTML before upload
-        run: |
-          echo "🔍 Checking Writerside build output before upload..."
-          
-          find dir -type f -name '*.html' | while read file; do
-            echo "🔍 Checking file: $file"
-          
-            if grep -q '<div id="utterances-comments"></div>' "$file"; then
-              echo "✅ Utterances <div> FOUND in $file"
-            else
-              echo "❌ ERROR: Utterances <div> NOT found in $file"
-            fi
-          done
+          find dir -type f -name '*.html' -exec sed -i 's|\[comment\]: # (utterances)|<script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-light" crossorigin="anonymous" async></script>|g' {} \;
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -134,95 +108,9 @@ jobs:
         with:
           path: dir
 
-      - name: Debug and Patch deployed HTML
-        run: |
-          echo "🔍 Fetching deployed HTML from GitHub Pages..."
-          sleep 10  # GitHub Pages 배포 지연 방지를 위해 대기
-          curl -s "https://jakezo.github.io/Jakezo-docs/algogo.html" -o deployed.html
-
-          echo "🔍 Checking if <nav class='navigation-links'> exists in deployed HTML..."
-          if grep -qi 'navigation-links' deployed.html; then
-            echo "✅ navigation-links found! Inserting Utterances <div> above it..."
-
-            # `navigation-links` 가 있는 모든 경우를 포괄하여 탐색하고 삽입
-            sed -i '/<div class="navigation-links/,/<\/div>/i \
-            <div id="utterances-comments"></div>' deployed.html
-          
-            echo "✅ Utterances <div> successfully inserted before navigation-links!"
-          else
-            echo "❌ navigation-links NOT found! Trying alternative placement..."
-
-            echo "🔍 Checking if layout--scroll-element exists..."
-            if grep -qi 'layout--scroll-element' deployed.html; then
-              echo "✅ layout--scroll-element found! Inserting Utterances <div> below it..."
-          
-              sed -i '/class="layout layout--container-content layout--scroll-element"/a \
-              <div id="utterances-comments"></div>' deployed.html
-          
-              echo "✅ Utterances <div> successfully inserted after layout--scroll-element!"
-            else
-              echo "❌ layout--scroll-element NOT found! Trying alternative placement..."
-          
-              if grep -qi 'layout--container-content layout--scroll-element' deployed.html; then
-                sed -i '/class="layout layout--container-content layout--scroll-element"/i \
-                <div id="utterances-comments"></div>' deployed.html
-          
-                echo "✅ Utterances <div> inserted before layout--container-content layout--scroll-element!"
-              else
-                echo "❌ No suitable layout found for insertion!"
-              fi
-            fi
-          fi
-
-          echo "🔍 Checking if Utterances <script> is at the end of <body>..."
-          if ! grep -q '<script src="https://utteranc.es/client.js"' deployed.html; then
-            sed -i '/<\/body>/i \
-            <script src="https://utteranc.es/client.js" repo="Jakezo/Jakezo-docs" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async></script>' deployed.html
-            echo "✅ Utterances <script> successfully inserted before </body>!"
-          else
-            echo "✅ Utterances <script> already present in deployed HTML!"
-          fi
-
-      # ✅ 기존 Pages Artifact 삭제
-      - name: Ensure jq is installed
-        run: sudo apt-get install jq -y
-
-      - name: Remove Existing Pages Artifact
-        run: |
-          echo "🔧 Fetching existing GitHub Pages artifact..."
-          
-          # 현재 실행 중인 GitHub Actions의 아티팩트 리스트에서 'github-pages' 아티팩트 ID 가져오기
-          ARTIFACT_ID=$(curl -s -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" | jq -r '.artifacts[] | select(.name=="github-pages") | .id')
-
-          if [[ -n "$ARTIFACT_ID" && "$ARTIFACT_ID" != "null" ]]; then
-            echo "🗑️ Removing artifact ID: $ARTIFACT_ID"
-          
-            # GitHub API를 사용해 해당 아티팩트 삭제 요청
-            curl -X DELETE -s -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID"
-          
-            echo "✅ Artifact deleted successfully! Waiting 3 seconds..."
-            sleep 3
-          else
-            echo "⚠️ No existing GitHub Pages artifact found. Skipping deletion."
-          fi
-        env:
-          MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
-
-      - name: Upload Modified Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dir
-
-      - name: Force GitHub Pages Deployment
-        run: |
-          echo "🔧 Triggering GitHub Pages deployment..."
-          curl -X POST -H "Authorization: token ${{ secrets.MY_GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pages/builds"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
   publish-indexes:
     needs: [build, test, deploy]
     runs-on: ubuntu-latest
