@@ -113,17 +113,27 @@ jobs:
           sleep 10  # 배포 지연 방지를 위해 10초 대기
           curl -s "https://jakezo.github.io/Jakezo-docs/algogo.html" -o deployed.html
 
-          echo "🔍 Checking if layout container exists..."
+          echo "🔍 Checking if layout--scroll-element exists..."
           if grep -q 'class="layout layout--container-content layout--scroll-element"' deployed.html; then
-            echo "✅ Target layout container found! Inserting Utterances <div>..."
+            echo "✅ layout--scroll-element found! Inserting Utterances <div> below it..."
           
             # `layout--scroll-element` 바로 아래에 `<div>` 삽입
             sed -i '/class="layout layout--container-content layout--scroll-element"/a \
             <div id="utterances-comments"></div>' deployed.html
           
-            echo "✅ Utterances <div> successfully inserted after target layout!"
+            echo "✅ Utterances <div> successfully inserted after layout--scroll-element!"
           else
-            echo "❌ Target layout container NOT found! Skipping <div> insertion."
+            echo "❌ layout--scroll-element NOT found! Trying alternative placement..."
+          
+            # `layout--scroll-element`가 없으면 `layout--container-content layout--scroll-element` 위쪽에 삽입
+            if grep -q 'class="layout layout--container-content layout--scroll-element"' deployed.html; then
+              sed -i '/class="layout layout--container-content layout--scroll-element"/i \
+              <div id="utterances-comments"></div>' deployed.html
+          
+              echo "✅ Utterances <div> inserted before layout--container-content layout--scroll-element!"
+            else
+              echo "❌ No suitable layout found for insertion!"
+            fi
           fi
 
           echo "🔍 Checking if Utterances <script> is at the end of <body>..."
