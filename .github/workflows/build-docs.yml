@@ -99,22 +99,21 @@ jobs:
         run: |
           echo "🔧 Ensuring Disqus script is inserted properly..."
           find dir -type f -name '*.html' | while read file; do
-            # 1️⃣ DISQUS_TOKEN을 Disqus 댓글 영역으로 대체 (코드 블록 내부 제외)
+            # 1️⃣ DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
             sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
 
-            # 2️⃣ `<code>` 태그 내부를 피해서 `<body>` 태그 뒤에 Disqus 스크립트 삽입
-            awk '
-            BEGIN { inside_code=0 }
-            /<code>/ { inside_code=1 }
-            /<\/code>/ { inside_code=0 }
-            { 
-              if (!inside_code) 
-                print gensub(/<body /, "<body>\n<script>\ndocument.addEventListener(\"DOMContentLoaded\", function() {\nvar d = document, s = d.createElement(\"script\");\ns.src = \"https://jakezo.disqus.com/embed.js\";\ns.setAttribute(\"data-timestamp\", +new Date());\n(d.head || d.body).appendChild(s);\n});\n</script>", 1);
-              else
-                print $0;
-            }' "$file" > temp.html && mv temp.html "$file"
+            # 2️⃣ `<body>` 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입 (코드 블록 영향 없음)
+            sed -i '/<body[^>]*>/a \
+            <script> \
+            document.addEventListener("DOMContentLoaded", function() { \
+                var d = document, s = d.createElement("script"); \
+                s.src = "https://jakezo.disqus.com/embed.js"; \
+                s.setAttribute("data-timestamp", +new Date()); \
+                (d.head || d.body).appendChild(s); \
+            }); \
+            </script>' "$file"
           done
-          echo "✅ Disqus script successfully inserted outside <code> blocks!"
+          echo "✅ Disqus script successfully inserted without breaking the page!"
 
 
       - name: Setup Pages
