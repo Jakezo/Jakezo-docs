@@ -99,13 +99,13 @@ jobs:
         run: |
           echo "🔧 Ensuring Disqus script is inserted properly..."
           find dir -type f -name '*.html' | while read file; do
-            # 1️⃣ DISQUS_TOKEN을 Disqus 댓글 영역으로 대체 (슬래시 대신 # 사용)
+            # 1️⃣ DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
             sed -i 's#DISQUS_TOKEN#<div id="disqus_thread"></div>#' -- "$file"
           
-            # 2️⃣ <pre> 코드 블록 내부에 삽입된 <script> 태그 제거 (코드 블록 깨짐 방지)
+            # 2️⃣ <pre> 코드 블록 내부에 삽입된 <script> 태그 제거
             sed -i ':a;N;$!ba;s#<pre[^>]*>\(.*\)<script[^>]*>.*</script>\(.*\)</pre>#<pre\1\2</pre>#g' -- "$file"
           
-            # 3️⃣ <body> 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입 (SPA 네비게이션 완벽 지원)
+            # 3️⃣ <body> 태그 뒤에 Disqus 스크립트 삽입 (SPA 네비게이션 지원)
             sed -i '/<body[^>]*>/a \
             <script> \
             function loadDisqus() { \
@@ -133,9 +133,13 @@ jobs:
             }); \
             </script>' -- "$file"
           
-            # 4️⃣ 브라우저 보안 정책 문제 해결 (document.browsingTopics 차단)
+            # 4️⃣ 브라우저 보안 정책 문제 해결 (browsing-topics 차단)
             sed -i '/<head>/a \
             <meta http-equiv="Permissions-Policy" content="browsing-topics=()">' -- "$file"
+          
+            # 5️⃣ 외부 추적 스크립트 차단 (Content Security Policy 적용)
+            sed -i '/<head>/a \
+            <meta http-equiv="Content-Security-Policy" content="default-src '\''self'\''; img-src * data:; script-src '\''self'\'' https://jakezo.disqus.com https://resources.jetbrains.com;">' -- "$file"
           done
           echo "✅ Disqus script successfully inserted, SPA issue fixed, and security settings applied!"
 
