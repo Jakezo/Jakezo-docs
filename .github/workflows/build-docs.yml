@@ -102,25 +102,16 @@ jobs:
             # DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
             sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
           
-            # <code> 태그 내부 감지하여 스크립트 삽입 방지
-            awk '
-              BEGIN { inside_code=0 }
-              /<code>/ { if (inside_code == 0) inside_code=1 }
-              /<\/code>/ { if (inside_code == 1) inside_code=0 }
-              /<\/body>/ {
-                if (inside_code == 0) {
-                  print "<script>"
-                  print "document.addEventListener(\"DOMContentLoaded\", function() {"
-                  print "    var d = document, s = d.createElement(\"script\");"
-                  print "    s.src = \"https://jakezo.disqus.com/embed.js\";"
-                  print "    s.setAttribute(\"data-timestamp\", +new Date());"
-                  print "    (d.head || d.body).appendChild(s);"
-                  print "});"
-                  print "</script>"
-                }
-              }
-              { print }
-            ' "$file" > temp.html && mv temp.html "$file"
+            # <title> 태그 바로 아래에 Disqus 스크립트 삽입
+            sed -i '/<title>/a \
+            <script> \
+            document.addEventListener("DOMContentLoaded", function() { \
+                var d = document, s = d.createElement("script"); \
+                s.src = "https://jakezo.disqus.com/embed.js"; \
+                s.setAttribute("data-timestamp", +new Date()); \
+                (d.head || d.body).appendChild(s); \
+            }); \
+            </script>' "$file"
           done
           echo "✅ Disqus comments successfully added to all HTML files using token!"
 
