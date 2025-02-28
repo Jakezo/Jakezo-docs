@@ -110,19 +110,19 @@ jobs:
                 if (disqusContainer) { \
                     disqusContainer.innerHTML = ""; \
                 } \
-                var s = document.createElement("script"); \
-                s.src = "https://jakezo.disqus.com/embed.js"; \
-                s.setAttribute("data-timestamp", +new Date()); \
-                (document.head || document.body).appendChild(s); \
+                if (typeof window.DISQUS === "undefined") { \
+                    var d = document, s = d.createElement("script"); \
+                    s.src = "https://jakezo.disqus.com/embed.js"; \
+                    s.setAttribute("data-timestamp", +new Date()); \
+                    (document.head || document.body).appendChild(s); \
+                } else { \
+                    window.DISQUS.reset({ reload: true }); \
+                } \
             } \
             document.addEventListener("DOMContentLoaded", loadDisqus); \
             document.addEventListener("writerside:content-updated", function() { \
                 console.log("🔄 Page updated: Reloading Disqus"); \
-                if (window.DISQUS) { \
-                    window.DISQUS.reset({ reload: true }); \
-                } else { \
-                    loadDisqus(); \
-                } \
+                setTimeout(loadDisqus, 500); \
             }); \
             </script>' -- "$file"
           done
