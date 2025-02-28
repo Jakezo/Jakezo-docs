@@ -105,12 +105,12 @@ jobs:
             # 2️⃣ `<body>` 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입 (코드 블록 영향 없음)
             sed -i '/<body[^>]*>/a \
             <script> \
-            document.addEventListener("DOMContentLoaded", function() { \
+            window.onload = function() { \
                 var d = document, s = d.createElement("script"); \
                 s.src = "https://jakezo.disqus.com/embed.js"; \
                 s.setAttribute("data-timestamp", +new Date()); \
                 (d.head || d.body).appendChild(s); \
-            }); \
+            }; \
             </script>' "$file"
           done
           echo "✅ Disqus script successfully inserted without breaking the page!"
