@@ -100,25 +100,33 @@ jobs:
           echo "🔧 Ensuring Disqus script is inserted properly..."
           find dir -type f -name '*.html' | while read file; do
             # 1️⃣ DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
-            sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
+            sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"></div>/' "$file"
 
-            # 2️⃣ `<body>` 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입 (SPA 네비게이션 대응)
+            # 2️⃣ `<body>` 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입 (SPA 네비게이션 완벽 지원)
             sed -i '/<body[^>]*>/a \
             <script> \
             function loadDisqus() { \
-                var d = document, s = d.createElement("script"); \
+                var disqusContainer = document.getElementById("disqus_thread"); \
+                if (disqusContainer) { \
+                    disqusContainer.innerHTML = ""; \
+                } \
+                var s = document.createElement("script"); \
                 s.src = "https://jakezo.disqus.com/embed.js"; \
                 s.setAttribute("data-timestamp", +new Date()); \
-                (d.head || d.body).appendChild(s); \
+                (document.head || document.body).appendChild(s); \
             } \
             document.addEventListener("DOMContentLoaded", loadDisqus); \
             document.addEventListener("writerside:content-updated", function() { \
-                document.getElementById("disqus_thread").innerHTML = ""; \
-                loadDisqus(); \
+                console.log("🔄 Page updated: Reloading Disqus"); \
+                if (window.DISQUS) { \
+                    window.DISQUS.reset({ reload: true }); \
+                } else { \
+                    loadDisqus(); \
+                } \
             }); \
             </script>' "$file"
           done
-          echo "✅ Disqus script successfully inserted and SPA navigation issue fixed!"
+          echo "✅ Disqus script successfully inserted and SPA issue fixed!"
 
 
       - name: Setup Pages
