@@ -95,15 +95,21 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ Commento 댓글 시스템 자동 삽입
-      - name: Insert Commento into HTML files using token
+      - name: Insert Commento container into HTML files using token
         run: |
-          echo "🔧 Inserting Commento comment section into all HTML files using token..."
+          echo "🔧 Inserting Commento container into all HTML files using token..."
           find dir -type f -name '*.html' | while read file; do
-            sed -i 's#COMMENTO_TOKEN#<script defer src="https://cdn.commento.io/js/commento.js"></script><div id="commento"></div>#' -- "$file"
+            sed -i 's#COMMENTO_TOKEN#<div id="commento"></div>#' -- "$file"
           done
-          echo "✅ Commento comments successfully added to all HTML files using token!"
+          echo "✅ Commento container successfully inserted into all HTML files using token!"
 
+      - name: Insert Commento embed script into HTML files
+        run: |
+          echo "🔧 Inserting Commento embed script into all HTML files..."
+          find dir -type f -name '*.html' | while read file; do
+            sed -i '/<\/body>/i \ <script defer src="https://cdn.commento.io/js/commento.js"></script>' -- "$file"
+          done
+          echo "✅ Commento embed script successfully inserted into all HTML files!"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
