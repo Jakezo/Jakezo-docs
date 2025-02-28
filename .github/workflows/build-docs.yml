@@ -95,21 +95,16 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      - name: Insert Commento container into HTML files using token
+      # ✅ Disqus 댓글 시스템 자동 삽입
+      - name: Insert Disqus into HTML files using token
         run: |
-          echo "🔧 Inserting Commento container into all HTML files using token..."
+          echo "🔧 Inserting Disqus comment section into all HTML files using token..."
           find dir -type f -name '*.html' | while read file; do
-            sed -i 's#COMMENTO_TOKEN#<div id="commento"></div>#' -- "$file"
+            # DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
+            sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
           done
-          echo "✅ Commento container successfully inserted into all HTML files using token!"
+          echo "✅ Disqus comments successfully added to all HTML files using token!"
 
-      - name: Insert Commento embed script into HTML files
-        run: |
-          echo "🔧 Inserting Commento embed script into all HTML files..."
-          find dir -type f -name '*.html' | while read file; do
-            sed -i '/<\/body>/i \ <script defer src="https://cdn.commento.io/js/commento.js"></script>' -- "$file"
-          done
-          echo "✅ Commento embed script successfully inserted into all HTML files!"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
