@@ -105,8 +105,8 @@ jobs:
             # <code> 태그 내부 감지하여 스크립트 삽입 방지
             awk '
               BEGIN { inside_code=0 }
-              /<code>/ { if (inside_code == 0) inside_code=1 }
-              /<\/code>/ { if (inside_code == 1) inside_code=0 }
+              /<code>/ { inside_code=1 }
+              /<\/code>/ { inside_code=0 }
               /<\/body>/ {
                 if (inside_code == 0) {
                   print "<script>"
