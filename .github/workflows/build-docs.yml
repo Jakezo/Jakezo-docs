@@ -103,9 +103,18 @@ jobs:
             # DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
             sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
           
-            # <body> 태그 바로 위에 Disqus embed 스크립트 삽입
+            # <head> 태그 안에 CSS 스타일 삽입 (댓글 영역 크기 조정)
+            sed -i '/<\/head>/i \
+            <style> \
+            #disqus_thread { max-width: 800px; margin: 0 auto; padding: 0 10px; } \
+            </style>' "$file"
+          
+            # <body> 태그 바로 위에 Disqus config 및 embed 스크립트 삽입 (다크 테마 설정 포함)
             sed -i '/<\/body>/i \
             <script> \
+            var disqus_config = function () { \
+              this.page.theme = "dark"; \
+            }; \
             document.addEventListener("DOMContentLoaded", function() { \
                 var d = document, s = d.createElement("script"); \
                 s.src = "https://jakezo.disqus.com/embed.js"; \
