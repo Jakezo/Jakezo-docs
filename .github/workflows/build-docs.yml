@@ -102,18 +102,23 @@ jobs:
             # 1️⃣ DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
             sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
 
-            # 2️⃣ `<body>` 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입 (코드 블록 영향 없음)
+            # 2️⃣ `<body>` 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입 (SPA 네비게이션 대응)
             sed -i '/<body[^>]*>/a \
             <script> \
-            window.onload = function() { \
+            function loadDisqus() { \
                 var d = document, s = d.createElement("script"); \
                 s.src = "https://jakezo.disqus.com/embed.js"; \
                 s.setAttribute("data-timestamp", +new Date()); \
                 (d.head || d.body).appendChild(s); \
-            }; \
+            } \
+            document.addEventListener("DOMContentLoaded", loadDisqus); \
+            document.addEventListener("writerside:content-updated", function() { \
+                document.getElementById("disqus_thread").innerHTML = ""; \
+                loadDisqus(); \
+            }); \
             </script>' "$file"
           done
-          echo "✅ Disqus script successfully inserted without breaking the page!"
+          echo "✅ Disqus script successfully inserted and SPA navigation issue fixed!"
 
 
       - name: Setup Pages
