@@ -100,23 +100,22 @@ jobs:
         run: |
           echo "🔧 Inserting Commento comment section into all HTML files using token..."
           find dir -type f -name '*.html' | while read file; do
-            # 코드 블록(<pre> ~ </pre>) 내는 제외하고, COMMENTO_TOKEN을 Commento embed 코드로 교체 (구분자 '#' 사용)
-            sed -i '/<pre>/,/<\/pre>/! s#COMMENTO_TOKEN#<script defer src="https://cdn.commento.io/js/commento.js"></script><div id="commento"></div>#' "$file"
+            sed -i 's#COMMENTO_TOKEN#<script defer src="https://cdn.commento.io/js/commento.js"></script><div id="commento"></div>#' -- "$file"
           done
           echo "✅ Commento comments successfully added to all HTML files using token!"
-    
-          - name: Setup Pages
-            uses: actions/configure-pages@v4
-    
-          - name: Package and upload Pages artifact
-            uses: actions/upload-pages-artifact@v3
-            with:
-              path: dir
-    
-          - name: Deploy to GitHub Pages
-            id: deployment
-            uses: actions/deploy-pages@v4
 
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Package and upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dir
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
   publish-indexes:
     needs: [build, test, deploy]
     runs-on: ubuntu-latest
