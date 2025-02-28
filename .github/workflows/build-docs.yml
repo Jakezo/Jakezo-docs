@@ -110,7 +110,7 @@ jobs:
                 if (disqusContainer) { \
                     disqusContainer.innerHTML = ""; \
                 } \
-                var existingScript = document.querySelector("script[src=\"https://jakezo.disqus.com/embed.js\"]"); \
+                var existingScript = document.querySelector("script[src=\\\"https://jakezo.disqus.com/embed.js\\\"]");
                 if (existingScript) { \
                     existingScript.remove(); \
                 } \
