@@ -109,12 +109,14 @@ jobs:
               /<\/code>/ { inside_code=0 }
               /<\/body>/ {
                 if (inside_code == 0) {
+                  print "<script>"
                   print "document.addEventListener(\"DOMContentLoaded\", function() {"
                   print "    var d = document, s = d.createElement(\"script\");"
-                  print "    s.src = \"https://jakezo.disqus.com/embed.js?t=\";"
+                  print "    s.src = \"https://jakezo.disqus.com/embed.js?t=\" + new Date().getTime();"
                   print "    s.setAttribute(\"data-timestamp\", +new Date());"
                   print "    (d.head || d.body).appendChild(s);"
                   print "});"
+                  print "</script>"
                 }
               }
               { print }
