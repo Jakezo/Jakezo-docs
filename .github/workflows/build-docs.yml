@@ -101,22 +101,29 @@ jobs:
           find dir -type f -name '*.html' | while read file; do
             # 1️⃣ DISQUS_TOKEN을 Disqus 댓글 영역으로 대체 (슬래시 대신 # 사용)
             sed -i 's#DISQUS_TOKEN#<div id="disqus_thread"></div>#' -- "$file"
-
-            # 2️⃣ `<body>` 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입 (SPA 네비게이션 완벽 지원)
+          
+            # 2️⃣ <pre> 코드 블록 내부에 삽입된 <script> 태그 제거 (코드 블록 깨짐 방지)
+            sed -i ':a;N;$!ba;s#<pre[^>]*>\(.*\)<script[^>]*>.*</script>\(.*\)</pre>#<pre\1\2</pre>#g' -- "$file"
+          
+            # 3️⃣ <body> 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입 (SPA 네비게이션 완벽 지원)
             sed -i '/<body[^>]*>/a \
             <script> \
             function loadDisqus() { \
-                var disqusContainer = document.getElementById("disqus_thread"); \
-                if (disqusContainer) { \
-                    disqusContainer.innerHTML = ""; \
-                } \
-                if (typeof window.DISQUS === "undefined") { \
-                    var d = document, s = d.createElement("script"); \
-                    s.src = "https://jakezo.disqus.com/embed.js"; \
-                    s.setAttribute("data-timestamp", +new Date()); \
-                    (document.head || document.body).appendChild(s); \
-                } else { \
-                    window.DISQUS.reset({ reload: true }); \
+                try { \
+                    var disqusContainer = document.getElementById("disqus_thread"); \
+                    if (disqusContainer) { \
+                        disqusContainer.innerHTML = ""; \
+                    } \
+                    if (typeof window.DISQUS === "undefined") { \
+                        var d = document, s = d.createElement("script"); \
+                        s.src = "https://jakezo.disqus.com/embed.js"; \
+                        s.setAttribute("data-timestamp", +new Date()); \
+                        (document.head || document.body).appendChild(s); \
+                    } else { \
+                        window.DISQUS.reset({ reload: true }); \
+                    } \
+                } catch (error) { \
+                    console.error("Disqus Loading Error:", error); \
                 } \
             } \
             document.addEventListener("DOMContentLoaded", loadDisqus); \
@@ -125,8 +132,12 @@ jobs:
                 setTimeout(loadDisqus, 500); \
             }); \
             </script>' -- "$file"
+          
+            # 4️⃣ 브라우저 보안 정책 문제 해결 (document.browsingTopics 차단)
+            sed -i '/<head>/a \
+            <meta http-equiv="Permissions-Policy" content="browsing-topics=()">' -- "$file"
           done
-          echo "✅ Disqus script successfully inserted and SPA issue fixed!"
+          echo "✅ Disqus script successfully inserted, SPA issue fixed, and security settings applied!"
 
 
       - name: Setup Pages
