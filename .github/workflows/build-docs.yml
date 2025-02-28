@@ -101,7 +101,7 @@ jobs:
           echo "🔧 Inserting Disqus comment section into all HTML files using token..."
           find dir -type f -name '*.html' | while read file; do
             # DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
-            sed -i 's/DISQUS_TOKEN/<div id="disqus_thread" style="background-color: #000; color: #ddd; padding: 20px; border-radius: 10px;"><\/div>/' "$file"
+            sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
           
             # <body> 태그 바로 위에 Disqus embed 스크립트 삽입
             sed -i '/<\/body>/i \
