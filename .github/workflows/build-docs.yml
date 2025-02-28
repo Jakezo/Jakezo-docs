@@ -95,7 +95,6 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ Disqus 댓글 시스템 자동 삽입
       - name: Insert Disqus into HTML files using token
         run: |
           echo "🔧 Inserting Disqus comment section into all HTML files using token..."
@@ -103,16 +102,25 @@ jobs:
             # DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
             sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
           
-            # <body> 태그 바로 위에 Disqus embed 스크립트 삽입
-            sed -i '/<\/body>/i \
-            <script> \
-            document.addEventListener("DOMContentLoaded", function() { \
-                var d = document, s = d.createElement("script"); \
-                s.src = "https://jakezo.disqus.com/embed.js"; \
-                s.setAttribute("data-timestamp", +new Date()); \
-                (d.head || d.body).appendChild(s); \
-            }); \
-            </script>' "$file"
+            # <code> 태그 내부 감지하여 스크립트 삽입 방지
+            awk '
+              BEGIN { inside_code=0 }
+              /<code>/ { inside_code=1 }
+              /<\/code>/ { inside_code=0 }
+              /<\/body>/ {
+                if (inside_code == 0) {
+                  print "<script>"
+                  print "document.addEventListener(\"DOMContentLoaded\", function() {"
+                  print "    var d = document, s = d.createElement(\"script\");"
+                  print "    s.src = \"https://jakezo.disqus.com/embed.js\";"
+                  print "    s.setAttribute(\"data-timestamp\", +new Date());"
+                  print "    (d.head || d.body).appendChild(s);"
+                  print "});"
+                  print "</script>"
+                }
+              }
+              { print }
+            ' "$file" > temp.html && mv temp.html "$file"
           done
           echo "✅ Disqus comments successfully added to all HTML files using token!"
 
