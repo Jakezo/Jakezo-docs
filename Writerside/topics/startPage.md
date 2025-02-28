@@ -26,6 +26,5 @@
 이 블로그에서 유용한 정보를 얻어가길 바랍니다! 💻🔥
 
 
-[comment]: # (utterances)
-
+DISQUS_TOKEN
 
