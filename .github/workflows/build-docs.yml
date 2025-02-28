@@ -102,14 +102,15 @@ jobs:
             # 1️⃣ DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
             sed -i 's#DISQUS_TOKEN#<div id="disqus_thread"></div>#' -- "$file"
           
-            # 2️⃣ <body> 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입
-            echo '<script>
+            # 2️⃣ Disqus 스크립트를 임시 파일에 저장
+            cat << 'EOF' > temp_script.js
+            <script>
             function loadDisqus() {
                 var disqusContainer = document.getElementById("disqus_thread");
                 if (disqusContainer) {
                     disqusContainer.innerHTML = "";
                 }
-                var existingScript = document.querySelector("script[src*=\'disqus.com/embed.js\']");
+                var existingScript = document.querySelector("script[src*='disqus.com/embed.js']");
                 if (existingScript) {
                     existingScript.remove();
                 }
@@ -126,7 +127,8 @@ jobs:
                 console.log("🔄 Page updated: Reloading Disqus");
                 setTimeout(loadDisqus, 500);
             });
-            </script>' > temp_script.js
+            </script>
+            EOF
           
             # 3️⃣ `sed`를 사용하여 <body> 태그 바로 뒤에 temp_script.js 삽입
             sed -i '/<body[^>]*>/r temp_script.js' -- "$file"
