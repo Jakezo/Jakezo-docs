@@ -104,29 +104,29 @@ jobs:
           
             # 2️⃣ <body> 태그가 열리는 부분 바로 뒤에 Disqus 스크립트 삽입 (줄바꿈 오류 해결)
             sed -i '/<body[^>]*>/a \
-            <script>\n\
-            function loadDisqus() {\n\
-                var disqusContainer = document.getElementById("disqus_thread");\n\
-                if (disqusContainer) {\n\
-                    disqusContainer.innerHTML = "";\n\
-                }\n\
-                var existingScript = document.querySelector("script[src*=\'disqus.com/embed.js\']");\n\
-                if (existingScript) {\n\
-                    existingScript.remove();\n\
-                }\n\
-                var s = document.createElement("script");\n\
-                s.src = "https://jakezo.disqus.com/embed.js?t=" + new Date().getTime();\n\
-                s.setAttribute("data-timestamp", +new Date());\n\
-                (document.head || document.body).appendChild(s);\n\
-            }\n\
-            document.addEventListener("DOMContentLoaded", function() {\n\
-                console.log("✅ DOMContentLoaded 이벤트 발생! Disqus 로드");\n\
-                setTimeout(loadDisqus, 500);\n\
-            });\n\
-            document.addEventListener("writerside:content-updated", function() {\n\
-                console.log("🔄 Page updated: Reloading Disqus");\n\
-                setTimeout(loadDisqus, 500);\n\
-            });\n\
+            <script> \
+            function loadDisqus() { \
+                var disqusContainer = document.getElementById("disqus_thread"); \
+                if (disqusContainer) { \
+                    disqusContainer.innerHTML = ""; \
+                } \
+                var existingScript = document.querySelector("script[src*=\'disqus.com/embed.js\']"); \
+                if (existingScript) { \
+                    existingScript.remove(); \
+                } \
+                var s = document.createElement("script"); \
+                s.src = "https://jakezo.disqus.com/embed.js?t=" + new Date().getTime(); \
+                s.setAttribute("data-timestamp", +new Date()); \
+                (document.head || document.body).appendChild(s); \
+            } \
+            document.addEventListener("DOMContentLoaded", function() { \
+                console.log("✅ DOMContentLoaded 이벤트 발생! Disqus 로드"); \
+                setTimeout(loadDisqus, 500); \
+            }); \
+            document.addEventListener("writerside:content-updated", function() { \
+                console.log("🔄 Page updated: Reloading Disqus"); \
+                setTimeout(loadDisqus, 500); \
+            }); \
             </script>' -- "$file"
           done
           echo "✅ Disqus script successfully inserted without breaking the page!"
