@@ -101,7 +101,7 @@ jobs:
           echo "🔧 Inserting Disqus comment section into all HTML files..."
           find dir -type f -name '*.html' | while read file; do
             # 1️⃣ `.layout--container-content` 내부에 Disqus 삽입
-            sed -i '/<div class="layout--container-content">/a \
+            sed -i '/layout--container-content/ a \
             <div id="disqus_thread"></div>' "$file"
           
             # 2️⃣ `<script>` 태그를 `<body>` 마지막에 삽입 (DOMContentLoaded 이벤트 활용)
