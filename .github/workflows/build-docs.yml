@@ -95,48 +95,27 @@ jobs:
       - name: Unzip artifact
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
-      # ✅ Disqus 댓글 시스템 자동 삽입
-      - name: Insert Disqus into HTML files using token
+      # ✅ Commento 댓글 시스템 자동 삽입
+      - name: Insert Commento into HTML files using token
         run: |
-          echo "🔧 Inserting Disqus comment section into all HTML files using token..."
+          echo "🔧 Inserting Commento comment section into all HTML files using token..."
           find dir -type f -name '*.html' | while read file; do
-            # DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
-            sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
-          
-            # <head> 태그 안에 CSS 스타일 삽입 (댓글 영역 크기 조정)
-            sed -i '/<\/head>/i \
-            <style> \
-            #disqus_thread { max-width: 800px; margin: 0 auto; padding: 0 10px; } \
-            </style>' "$file"
-          
-            # <body> 태그 바로 위에 Disqus config 및 embed 스크립트 삽입 (다크 테마 설정 포함)
-            sed -i '/<\/body>/i \
-            <script> \
-            var disqus_config = function () { \
-              this.page.theme = "dark"; \
-            }; \
-            document.addEventListener("DOMContentLoaded", function() { \
-                var d = document, s = d.createElement("script"); \
-                s.src = "https://jakezo.disqus.com/embed.js"; \
-                s.setAttribute("data-timestamp", +new Date()); \
-                (d.head || d.body).appendChild(s); \
-            }); \
-            </script>' "$file"
+            # 코드 블록(<pre> ~ </pre>) 내를 제외하고, COMMENTO_TOKEN을 Commento embed 코드로 교체
+            sed -i '/<pre>/,/<\/pre>/! s/COMMENTO_TOKEN/<script defer src="https:\/\/cdn.commento.io\/js\/commento.js"><\/script><div id="commento"><\/div>/' "$file"
           done
-          echo "✅ Disqus comments successfully added to all HTML files using token!"
-
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Package and upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dir
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          echo "✅ Commento comments successfully added to all HTML files using token!"
+    
+          - name: Setup Pages
+            uses: actions/configure-pages@v4
+    
+          - name: Package and upload Pages artifact
+            uses: actions/upload-pages-artifact@v3
+            with:
+              path: dir
+    
+          - name: Deploy to GitHub Pages
+            id: deployment
+            uses: actions/deploy-pages@v4
   publish-indexes:
     needs: [build, test, deploy]
     runs-on: ubuntu-latest

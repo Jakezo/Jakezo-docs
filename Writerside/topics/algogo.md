@@ -30,4 +30,4 @@
 이거 계속 어떻게 할지 생각이 안난다..
 ---
 
-DISQUS_TOKEN
+COMMENTO_TOKEN
