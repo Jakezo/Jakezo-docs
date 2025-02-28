@@ -96,26 +96,28 @@ jobs:
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
       # ✅ Disqus 댓글 시스템 자동 삽입
-      - name: Insert Commento into HTML files using token
+      - name: Insert Disqus into HTML files using token
         run: |
-          echo "🔧 Inserting Commento comment section into all HTML files using token..."
+          echo "🔧 Inserting Disqus comment section into all HTML files using token..."
           find dir -type f -name '*.html' | while read file; do
-            # COMMENTO_TOKEN을 Commento 댓글 영역으로 대체
-            sed -i 's/COMMENTO_TOKEN/<div id="commento"><\/div>/' "$file"
+            # DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
+            sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
           
-            # <body> 태그 바로 위에 Commento embed 스크립트 삽입
+        # </body> 태그 바로 위에 Disqus embed 스크립트 삽입 (다크 모드 설정 포함)
             sed -i '/<\/body>/i \
-            <script> \
+           <script> \
+            var disqus_config = function () { \
+            this.page.theme = "dark"; \
+          }; \
             document.addEventListener("DOMContentLoaded", function() { \
-                var d = document, s = d.createElement("script"); \
-                s.src = "https://cdn.commento.io/js/commento.js"; \
-                s.setAttribute("data-timestamp", +new Date()); \
-                (d.head || d.body).appendChild(s); \
-            }); \
+            var d = document, s = d.createElement("script"); \
+            s.src = "https://jakezo.disqus.com/embed.js"; \
+            s.setAttribute("data-timestamp", +new Date()); \
+            (d.head || d.body).appendChild(s); \
+          }); \
             </script>' "$file"
-          done
-          echo "✅ Commento comments successfully added to all HTML files using token!"
-
+            done
+            echo "✅ Disqus comments successfully added to all HTML files using token!"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
