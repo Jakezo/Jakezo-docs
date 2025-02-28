@@ -103,7 +103,7 @@ jobs:
             # DISQUS_TOKEN을 Disqus 댓글 영역으로 대체
             sed -i 's/DISQUS_TOKEN/<div id="disqus_thread"><\/div>/' "$file"
           
-        # </body> 태그 바로 위에 Disqus embed 스크립트 삽입 (다크 모드 설정 포함)
+            # </body> 태그 바로 위에 Disqus embed 스크립트 삽입 (다크 모드 설정 포함)
             sed -i '/<\/body>/i \
            <script> \
             var disqus_config = function () { \
