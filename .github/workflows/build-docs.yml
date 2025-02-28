@@ -96,15 +96,14 @@ jobs:
         run: unzip -O UTF-8 -qq "artifacts/${{ needs.build.outputs.artifact }}" -d dir
 
       # ✅ Disqus 댓글 시스템 자동 삽입
-      - name: Insert Disqus into HTML files
+      - name: Insert Disqus into HTML files using marker
         run: |
-          echo "🔧 Inserting Disqus comment section into all HTML files..."
+          echo "🔧 Inserting Disqus comment section into all HTML files using marker..."
           find dir -type f -name '*.html' | while read file; do
-            # 1️⃣ `.layout--container-content` 내부에 Disqus 삽입
-            sed -i '/layout--container-content/ a \
-            <div id="disqus_thread"></div>' "$file"
+            # 마커를 Disqus 댓글 영역으로 대체
+            sed -i 's/<!-- DISQUS_MARKER -->/<div id="disqus_thread"><\/div>/' "$file"
           
-            # 2️⃣ `<script>` 태그를 `<body>` 마지막에 삽입 (DOMContentLoaded 이벤트 활용)
+            # <body> 태그 바로 위에 Disqus embed 스크립트 삽입
             sed -i '/<\/body>/i \
             <script> \
             document.addEventListener("DOMContentLoaded", function() { \
@@ -115,7 +114,7 @@ jobs:
             }); \
             </script>' "$file"
           done
-          echo "✅ Disqus comments successfully added to all HTML files!"
+          echo "✅ Disqus comments successfully added to all HTML files using marker!"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
