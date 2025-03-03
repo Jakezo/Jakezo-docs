@@ -110,7 +110,7 @@ jobs:
                 s.src = "https://jakezo.disqus.com/embed.js"; \
                 s.setAttribute("data-timestamp", +new Date()); \
                 (d.head || d.body).appendChild(s); \
-            }); \
+            }; \
             </script>' "$file"
           done
           echo "✅ Disqus script successfully inserted without breaking the page!"
